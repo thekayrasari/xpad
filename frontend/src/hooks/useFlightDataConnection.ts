@@ -7,7 +7,7 @@ export function useFlightDataConnection(url: string = 'ws://localhost:8080') {
     const setConnectionStatus = useFlightStore((state) => state.setConnectionStatus);
     const wsRef = useRef<WebSocket | null>(null);
     const retryCount = useRef(0);
-    const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         const connect = () => {

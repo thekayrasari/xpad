@@ -3,17 +3,15 @@ import { Save, AlertTriangle } from 'lucide-react';
 import { useSettingsStore, DEFAULT_THEME_COLORS, type ThemeColors } from '../../stores/settingsStore';
 
 export const SettingsModule: React.FC = () => {
-    const { simbriefId, vatsimId, themeColors, setSimbriefId, setVatsimId, setThemeColors, resetSettings } = useSettingsStore();
+    const { simbriefId, themeColors, setSimbriefId, setThemeColors, resetSettings } = useSettingsStore();
     
     // Local state for inputs before saving
     const [localSimbrief, setLocalSimbrief] = useState(simbriefId);
-    const [localVatsim, setLocalVatsim] = useState(vatsimId);
     const [localTheme, setLocalTheme] = useState<ThemeColors>(themeColors);
     const [saved, setSaved] = useState(false);
 
     const handleSave = () => {
         setSimbriefId(localSimbrief);
-        setVatsimId(localVatsim);
         setThemeColors(localTheme);
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);
@@ -23,7 +21,6 @@ export const SettingsModule: React.FC = () => {
         if (confirm('Are you sure you want to erase all local data? This will reset your settings and caches.')) {
             resetSettings();
             setLocalSimbrief('');
-            setLocalVatsim('');
             setLocalTheme(DEFAULT_THEME_COLORS);
             localStorage.clear();
         }
@@ -54,21 +51,7 @@ export const SettingsModule: React.FC = () => {
                         </p>
                     </div>
 
-                    <div className="space-y-2">
-                        <label className="block text-xs font-bold uppercase text-text-secondary">
-                            VATSIM CID (Optional)
-                        </label>
-                        <input
-                            type="text"
-                            value={localVatsim}
-                            onChange={(e) => setLocalVatsim(e.target.value)}
-                            placeholder="Enter CID (e.g. 1000000)"
-                            className="w-full bg-dark-bg border border-white/[0.1] rounded-md px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue focus:ring-1 focus:ring-accent-blue transition-colors"
-                        />
-                        <p className="text-xs text-text-secondary/70">
-                            Highlights your aircraft differently on the radar.
-                        </p>
-                    </div>
+
 
 
 

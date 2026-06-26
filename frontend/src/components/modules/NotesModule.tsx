@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { Pen, Type, RotateCcw, FileEdit, Trash2 } from 'lucide-react';
+import { Pen, Type, RotateCcw, Trash2 } from 'lucide-react';
 import { useNotesStore, type Stroke, type Point } from '../../stores/notesStore';
 
 const generateId = () => Date.now().toString(36) + Math.random().toString(36).substring(2);

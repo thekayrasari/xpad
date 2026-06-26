@@ -29,10 +29,8 @@ export const DEFAULT_THEME_COLORS: ThemeColors = {
 
 interface SettingsState {
     simbriefId: string;
-    vatsimId: string;
     themeColors: ThemeColors;
     setSimbriefId: (id: string) => void;
-    setVatsimId: (id: string) => void;
     setThemeColors: (colors: Partial<ThemeColors>) => void;
     resetSettings: () => void;
 }
@@ -41,14 +39,12 @@ export const useSettingsStore = create<SettingsState>()(
     persist(
         (set) => ({
             simbriefId: '',
-            vatsimId: '',
             themeColors: DEFAULT_THEME_COLORS,
             setSimbriefId: (id) => set({ simbriefId: id }),
-            setVatsimId: (id) => set({ vatsimId: id }),
             setThemeColors: (colors) => set((state) => ({ 
                 themeColors: { ...state.themeColors, ...colors } 
             })),
-            resetSettings: () => set({ simbriefId: '', vatsimId: '', themeColors: DEFAULT_THEME_COLORS }),
+            resetSettings: () => set({ simbriefId: '', themeColors: DEFAULT_THEME_COLORS }),
         }),
         {
             name: 'xpad-settings', // key in localStorage
