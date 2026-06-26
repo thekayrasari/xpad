@@ -1,13 +1,12 @@
 import { useFlightDataConnection } from './hooks/useFlightDataConnection';
 import { ModuleContainer } from './components/ModuleContainer';
-import { ThemeProvider } from './components/ThemeProvider';
 import { GlobalHeader } from './components/GlobalHeader';
 
 const App = () => {
     useFlightDataConnection();
 
     return (
-        <ThemeProvider>
+        <>
             {/* Background Gradients to make glassmorphism visible */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10 bg-dark-bg">
                 <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-accent-teal/20 blur-[120px]" />
@@ -20,7 +19,7 @@ const App = () => {
                     <ModuleContainer />
                 </div>
             </div>
-        </ThemeProvider>
+        </>
     );
 };
 

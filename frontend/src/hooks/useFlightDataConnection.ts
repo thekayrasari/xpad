@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useFlightStore } from '../store';
+import { useFlightStore } from '../stores/flightStore';
 import { useAOCStore } from '../stores/aocStore';
 
 export function useFlightDataConnection(url: string = 'ws://localhost:8080') {

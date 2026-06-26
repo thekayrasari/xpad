@@ -47,7 +47,7 @@ export class FlightDataService {
     public subscribe(callback: FlightDataCallback): () => void {
         this.subscribers.add(callback);
         // Immediately send latest data upon subscription
-        callback(this.mockData);
+        callback({ ...this.mockData });
         return () => this.subscribers.delete(callback);
     }
 

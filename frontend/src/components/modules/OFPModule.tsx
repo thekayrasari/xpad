@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useOFPStore } from '../../stores/ofpStore';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { AlertTriangle, FileText, Fuel, Plane } from 'lucide-react';
@@ -6,7 +6,6 @@ import { AlertTriangle, FileText, Fuel, Plane } from 'lucide-react';
 export const OFPModule: React.FC = () => {
     const { data, isLoading, error, fetchOFP } = useOFPStore();
     const { simbriefId } = useSettingsStore();
-    const [localError] = useState<string | null>(null);
 
     useEffect(() => {
         if (simbriefId && !data && !isLoading && !error) {
@@ -32,10 +31,10 @@ export const OFPModule: React.FC = () => {
     return (
         <div className="w-full h-full flex flex-col font-sans text-text-primary bg-transparent overflow-hidden">
             <div className="flex-1 flex flex-col px-6 md:px-8 pt-4 pb-6 min-h-0 overflow-hidden">
-                {(error || localError) && (
+                {error && (
                     <div className="bg-accent-red/10 border border-accent-red/30 text-accent-red p-4 rounded-md flex items-center gap-3 mb-6 shrink-0 font-bold uppercase">
                         <AlertTriangle className="w-5 h-5 shrink-0" />
-                        <p>{error ?? localError}</p>
+                        <p>{error}</p>
                     </div>
                 )}
 
@@ -103,9 +102,7 @@ export const OFPModule: React.FC = () => {
                             <h2 className="text-xs font-bold text-text-secondary uppercase tracking-widest">Dispatch Release — Raw Text OFP</h2>
                         </div>
                         <div className="flex-1 overflow-y-auto p-6 pb-8 hide-scrollbar">
-                            <pre className="text-xs font-bold leading-relaxed text-text-secondary whitespace-pre-wrap">
-                                {cleanOFP}
-                            </pre>
+                            <pre className="text-xs font-bold leading-relaxed text-text-secondary whitespace-pre-wrap">{cleanOFP}</pre>
                         </div>
                     </div>
                 </div>

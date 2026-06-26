@@ -38,11 +38,11 @@ app.get('/api/health', (req, res) => {
 
 // ── Aviation Weather Proxy ─────────────────────────────────────────────────────
 // AWC blocks CORS from browsers; we proxy the request server-side instead.
-app.get('/api/weather/metar', async (req, res) => {
+async function proxyAWC(endpoint: string, req: express.Request, res: express.Response) {
     const ids = req.query.ids as string;
     if (!ids) return res.status(400).json({ error: 'ids param required' });
     try {
-        const url = `https://aviationweather.gov/api/data/metar?ids=${encodeURIComponent(ids)}&format=json`;
+        const url = `https://aviationweather.gov/api/data/${endpoint}?ids=${encodeURIComponent(ids)}&format=json`;
         const upstream = await fetch(url);
         if (!upstream.ok) {
             return res.status(upstream.status).json({ error: `Upstream error: ${upstream.statusText}` });
@@ -50,26 +50,12 @@ app.get('/api/weather/metar', async (req, res) => {
         const data = await upstream.json();
         res.json(data);
     } catch (err: any) {
-        res.status(502).json({ error: 'Failed to fetch METAR', detail: err.message });
+        res.status(502).json({ error: `Failed to fetch ${endpoint.toUpperCase()}`, detail: err.message });
     }
-});
+}
 
-app.get('/api/weather/taf', async (req, res) => {
-    const ids = req.query.ids as string;
-    if (!ids) return res.status(400).json({ error: 'ids param required' });
-    try {
-        const url = `https://aviationweather.gov/api/data/taf?ids=${encodeURIComponent(ids)}&format=json`;
-        const upstream = await fetch(url);
-        if (!upstream.ok) {
-            return res.status(upstream.status).json({ error: `Upstream error: ${upstream.statusText}` });
-        }
-        const data = await upstream.json();
-        res.json(data);
-    } catch (err: any) {
-        res.status(502).json({ error: 'Failed to fetch TAF', detail: err.message });
-    }
-});
-
+app.get('/api/weather/metar', (req, res) => proxyAWC('metar', req, res));
+app.get('/api/weather/taf', (req, res) => proxyAWC('taf', req, res));
 
 // Initialize services
 const flightService = new FlightDataService();

@@ -1,19 +1,17 @@
 import React, { useState } from 'react';
 import { Save, AlertTriangle } from 'lucide-react';
-import { useSettingsStore, DEFAULT_THEME_COLORS, type ThemeColors, type ChartsProvider } from '../../stores/settingsStore';
+import { useSettingsStore, type ChartsProvider } from '../../stores/settingsStore';
 
 export const SettingsModule: React.FC = () => {
-    const { simbriefId, themeColors, chartsProvider, setSimbriefId, setThemeColors, setChartsProvider, resetSettings } = useSettingsStore();
+    const { simbriefId, chartsProvider, setSimbriefId, setChartsProvider, resetSettings } = useSettingsStore();
     
     // Local state for inputs before saving
     const [localSimbrief, setLocalSimbrief] = useState(simbriefId);
-    const [localTheme, setLocalTheme] = useState<ThemeColors>(themeColors);
     const [localChartsProvider, setLocalChartsProvider] = useState<ChartsProvider>(chartsProvider);
     const [saved, setSaved] = useState(false);
 
     const handleSave = () => {
         setSimbriefId(localSimbrief);
-        setThemeColors(localTheme);
         setChartsProvider(localChartsProvider);
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);
@@ -23,7 +21,6 @@ export const SettingsModule: React.FC = () => {
         if (confirm('Are you sure you want to erase all local data? This will reset your settings and caches.')) {
             resetSettings();
             setLocalSimbrief('');
-            setLocalTheme(DEFAULT_THEME_COLORS);
             setLocalChartsProvider('msfs');
             localStorage.clear();
         }
