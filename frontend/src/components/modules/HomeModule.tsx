@@ -51,7 +51,6 @@ export const HomeModule: React.FC = () => {
                     <span className="font-sans font-light text-[5rem] md:text-[7rem] tracking-widest text-text-primary leading-none">x</span>
                     <span className="font-sans font-bold text-[5rem] md:text-[7rem] tracking-widest text-text-primary leading-none">Pad</span>
                 </div>
-                <p className="text-text-secondary font-medium tracking-[0.2em] uppercase text-xs md:text-sm mb-8">Welcome to your EFB</p>
                 
                 <div className="flex flex-col items-center">
                     <button 

@@ -73,10 +73,8 @@ export const NotesModule: React.FC = () => {
 
         handleResize();
         window.addEventListener('resize', handleResize);
-        
         // Small delay to ensure layout is complete before sizing canvas
         setTimeout(handleResize, 100);
-        
         return () => window.removeEventListener('resize', handleResize);
     }, [strokes, drawStrokes]); // Redraw when strokes change
 

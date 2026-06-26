@@ -3,11 +3,9 @@ import { FlightDataService } from '../services/flightDataService';
 
 export class WebSocketController {
     private wss: WebSocketServer;
-    private flightService: FlightDataService;
     private cleanupFlight: () => void;
 
     constructor(port: number, flightService: FlightDataService) {
-        this.flightService = flightService;
         this.wss = new WebSocketServer({ port });
 
         console.log(`WebSocket server initialized on port ${port}`);
@@ -21,11 +19,9 @@ export class WebSocketController {
         });
 
         // Subscribe to flight data
-        this.cleanupFlight = this.flightService.subscribe((data) => {
+        this.cleanupFlight = flightService.subscribe((data) => {
             this.broadcast('flight_data', data);
         });
-
-
     }
 
     public broadcast(topic: string, payload: unknown) {
