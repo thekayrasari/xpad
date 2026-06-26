@@ -1,0 +1,47 @@
+{
+  "name": "xpad",
+  "version": "1.2.0",
+  "description": "Universal Electronic Flight Bag",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "build": "npm run build:backend && npm run build:frontend",
+    "dist": "npm run build && electron-builder"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^29.1.0",
+    "electron-builder": "^24.13.3"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "node-simconnect": "^4.2.0",
+    "ws": "^8.21.0"
+  },
+  "build": {
+    "appId": "com.thekayrasari.xpad",
+    "productName": "xPad",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "app_icon.png",
+      "backend/.env",
+      "backend/dist/**/*",
+      "frontend/dist/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "app_icon.png"
+    }
+  },
+  "allowScripts": {
+    "electron@29.4.6": true
+  }
+}
