@@ -3,7 +3,7 @@ import { useUIStore, type ModuleType } from '../../stores/uiStore';
 import { useOFPStore } from '../../stores/ofpStore';
 import { useWeatherStore } from '../../stores/weatherStore';
 import { useSettingsStore } from '../../stores/settingsStore';
-import { Plane, FileText, MessageSquare, Cloud, BookOpen, FileEdit, ClipboardList, Settings, Map as MapIcon, Globe, RefreshCw, AlertTriangle, Radar } from 'lucide-react';
+import { Plane, FileText, MessageSquare, Cloud, BookOpen, FileEdit, ClipboardList, Settings, Map as MapIcon, RefreshCw, AlertTriangle, Radar, Download, Navigation } from 'lucide-react';
 
 const apps: { id: ModuleType; label: string; icon: React.FC<any>; color: string }[] = [
     { id: 'ofp', label: 'OFP', icon: FileText, color: 'text-accent-teal' },
@@ -16,7 +16,8 @@ const apps: { id: ModuleType; label: string; icon: React.FC<any>; color: string 
     { id: 'notes', label: 'Notes', icon: FileEdit, color: 'text-accent-orange' },
     { id: 'fenix', label: 'Fenix EFB', icon: Plane, color: 'text-accent-blue' },
     { id: 'charts', label: 'Charts', icon: MapIcon, color: 'text-accent-purple' },
-    { id: 'links', label: 'Links', icon: Globe, color: 'text-accent-green' },
+    { id: 'flightsimto', label: 'Flightsim.to', icon: Download, color: 'text-accent-teal' },
+    { id: 'nattrak', label: 'NatTrak', icon: Navigation, color: 'text-accent-blue' },
     { id: 'settings', label: 'Settings', icon: Settings, color: 'text-text-secondary' },
 ];
 

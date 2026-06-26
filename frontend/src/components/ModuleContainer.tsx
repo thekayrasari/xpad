@@ -12,8 +12,9 @@ import { AOCModule } from './modules/AOCModule';
 import { NotesModule } from './modules/NotesModule';
 import { DispatchModule } from './modules/DispatchModule';
 import { FenixModule } from './modules/FenixModule';
-import { LinksModule } from './modules/LinksModule';
 import { ChartsModule } from './modules/ChartsModule';
+import { FlightsimtoModule } from './modules/FlightsimtoModule';
+import { NattrakModule } from './modules/NattrakModule';
 
 const Pane: React.FC<{ active: ModuleType }> = ({ active }) => {
     const [mounted, setMounted] = useState<Set<string>>(new Set([active]));
@@ -39,8 +40,9 @@ const Pane: React.FC<{ active: ModuleType }> = ({ active }) => {
             {mounted.has('notes')     && <div className={`w-full h-full animate-page-enter ${active === 'notes' ? 'block' : 'hidden'}`}><NotesModule /></div>}
             {mounted.has('dispatch')  && <div className={`w-full h-full animate-page-enter ${active === 'dispatch' ? 'block' : 'hidden'}`}><DispatchModule /></div>}
             {mounted.has('fenix')     && <div className={`w-full h-full animate-page-enter ${active === 'fenix' ? 'block' : 'hidden'}`}><FenixModule /></div>}
-            {mounted.has('links')     && <div className={`w-full h-full animate-page-enter ${active === 'links' ? 'block' : 'hidden'}`}><LinksModule /></div>}
             {mounted.has('charts')    && <div className={`w-full h-full animate-page-enter ${active === 'charts' ? 'block' : 'hidden'}`}><ChartsModule /></div>}
+            {mounted.has('flightsimto') && <div className={`w-full h-full animate-page-enter ${active === 'flightsimto' ? 'block' : 'hidden'}`}><FlightsimtoModule /></div>}
+            {mounted.has('nattrak')   && <div className={`w-full h-full animate-page-enter ${active === 'nattrak' ? 'block' : 'hidden'}`}><NattrakModule /></div>}
             {mounted.has('settings')  && <div className={`w-full h-full animate-page-enter ${active === 'settings' ? 'block' : 'hidden'}`}><SettingsModule /></div>}
         </Suspense>
     );
