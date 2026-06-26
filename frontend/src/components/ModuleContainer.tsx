@@ -2,7 +2,7 @@ import React, { Suspense, useState, useEffect } from 'react';
 import { useUIStore, type ModuleType } from '../stores/uiStore';
 import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from 'react-resizable-panels';
 import { HomeModule } from './modules/HomeModule';
-import { MapModule } from './modules/MapModule';
+import { RadarModule } from './modules/RadarModule';
 import { SettingsModule } from './modules/SettingsModule';
 import { OFPModule } from './modules/OFPModule';
 
@@ -10,9 +10,10 @@ import { WeatherModule } from './modules/WeatherModule';
 import { PDFModule } from './modules/PDFModule';
 import { AOCModule } from './modules/AOCModule';
 import { NotesModule } from './modules/NotesModule';
-import { PlannerModule } from './modules/PlannerModule';
+import { DispatchModule } from './modules/DispatchModule';
 import { FenixModule } from './modules/FenixModule';
 import { LinksModule } from './modules/LinksModule';
+import { ChartsModule } from './modules/ChartsModule';
 
 const Pane: React.FC<{ active: ModuleType }> = ({ active }) => {
     const [mounted, setMounted] = useState<Set<string>>(new Set([active]));
@@ -31,14 +32,15 @@ const Pane: React.FC<{ active: ModuleType }> = ({ active }) => {
             {mounted.has('home')      && <div className={`w-full h-full animate-page-enter ${active === 'home' ? 'block' : 'hidden'}`}><HomeModule /></div>}
             {mounted.has('ofp')       && <div className={`w-full h-full animate-page-enter ${active === 'ofp' ? 'block' : 'hidden'}`}><OFPModule /></div>}
 
-            {mounted.has('map')       && <div className={`w-full h-full animate-page-enter ${active === 'map' ? 'block' : 'hidden'}`}><MapModule /></div>}
+            {mounted.has('radar')     && <div className={`w-full h-full animate-page-enter ${active === 'radar' ? 'block' : 'hidden'}`}><RadarModule /></div>}
             {mounted.has('weather')   && <div className={`w-full h-full animate-page-enter ${active === 'weather' ? 'block' : 'hidden'}`}><WeatherModule /></div>}
             {mounted.has('pdf')       && <div className={`w-full h-full animate-page-enter ${active === 'pdf' ? 'block' : 'hidden'}`}><PDFModule /></div>}
             {mounted.has('aoc')       && <div className={`w-full h-full animate-page-enter ${active === 'aoc' ? 'block' : 'hidden'}`}><AOCModule /></div>}
             {mounted.has('notes')     && <div className={`w-full h-full animate-page-enter ${active === 'notes' ? 'block' : 'hidden'}`}><NotesModule /></div>}
-            {mounted.has('planner')   && <div className={`w-full h-full animate-page-enter ${active === 'planner' ? 'block' : 'hidden'}`}><PlannerModule /></div>}
+            {mounted.has('dispatch')  && <div className={`w-full h-full animate-page-enter ${active === 'dispatch' ? 'block' : 'hidden'}`}><DispatchModule /></div>}
             {mounted.has('fenix')     && <div className={`w-full h-full animate-page-enter ${active === 'fenix' ? 'block' : 'hidden'}`}><FenixModule /></div>}
             {mounted.has('links')     && <div className={`w-full h-full animate-page-enter ${active === 'links' ? 'block' : 'hidden'}`}><LinksModule /></div>}
+            {mounted.has('charts')    && <div className={`w-full h-full animate-page-enter ${active === 'charts' ? 'block' : 'hidden'}`}><ChartsModule /></div>}
             {mounted.has('settings')  && <div className={`w-full h-full animate-page-enter ${active === 'settings' ? 'block' : 'hidden'}`}><SettingsModule /></div>}
         </Suspense>
     );

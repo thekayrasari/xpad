@@ -2,11 +2,9 @@ import { useFlightDataConnection } from './hooks/useFlightDataConnection';
 import { ModuleContainer } from './components/ModuleContainer';
 import { ThemeProvider } from './components/ThemeProvider';
 import { GlobalHeader } from './components/GlobalHeader';
-import { useUIStore } from './stores/uiStore';
 
 const App = () => {
     useFlightDataConnection();
-    const { setActiveModule } = useUIStore();
 
     return (
         <ThemeProvider>

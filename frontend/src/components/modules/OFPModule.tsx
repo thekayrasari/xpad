@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useOFPStore } from '../../stores/ofpStore';
 import { useSettingsStore } from '../../stores/settingsStore';
-import { RefreshCw, AlertTriangle, FileText, MapPin, Fuel, Plane, List } from 'lucide-react';
+import { AlertTriangle, FileText, Fuel, Plane } from 'lucide-react';
 
 export const OFPModule: React.FC = () => {
     const { data, isLoading, error, fetchOFP } = useOFPStore();
     const { simbriefId } = useSettingsStore();
-    const [localError, setLocalError] = useState<string | null>(null);
+    const [localError] = useState<string | null>(null);
 
     useEffect(() => {
         if (simbriefId && !data && !isLoading && !error) {

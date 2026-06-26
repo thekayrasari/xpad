@@ -13,7 +13,8 @@ function createWindow() {
     icon: path.join(__dirname, 'app_icon.png'),
     webPreferences: {
       nodeIntegration: false,
-      contextIsolation: true
+      contextIsolation: true,
+      webviewTag: true
     },
     backgroundColor: '#0f172a' // Matches dark mode primary bg
   });
@@ -43,6 +44,7 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+
   try {
     require('./backend/dist/main.js');
   } catch (err) {
