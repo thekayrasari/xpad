@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useUIStore } from '../../stores/uiStore';
 import { RefreshCw, ExternalLink, Wifi, WifiOff, ShieldAlert, Plane, AlertTriangle, Settings, Check } from 'lucide-react';
 
 const FSLABS_PORT = 23032;
@@ -95,8 +96,8 @@ export const FslabsModule: React.FC = () => {
                 {/* No IP configured yet */}
                 {!ip && connectionState === 'idle' && (
                     <div className="flex flex-col items-center justify-center h-full gap-5 text-center px-8 max-w-md mx-auto">
-                        <div className="p-4 bg-accent-purple/10 border border-accent-purple/20 rounded-xl">
-                            <Plane className="w-10 h-10 text-accent-purple" />
+                        <div className="p-4 bg-[#ef4444]/10 border border-[#ef4444]/20 rounded-xl">
+                            <Plane className="w-10 h-10 text-[#ef4444]" />
                         </div>
                         <div>
                             <h2 className="text-xl font-extrabold uppercase tracking-wide text-text-primary mb-2">FSLabs xPad</h2>
@@ -216,10 +217,10 @@ export const FslabsModule: React.FC = () => {
                         {!iframeLoaded && (
                             <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 text-center z-10 bg-transparent">
                                 <div className="relative">
-                                    <div className="w-16 h-16 rounded-xl bg-accent-purple/10 border border-accent-purple/20 flex items-center justify-center">
-                                        <Plane className="w-7 h-7 text-accent-purple" />
+                                    <div className="w-16 h-16 rounded-xl bg-[#ef4444]/10 border border-[#ef4444]/20 flex items-center justify-center">
+                                        <Plane className="w-7 h-7 text-[#ef4444]" />
                                     </div>
-                                    <div className="absolute inset-0 rounded-xl border-2 border-accent-purple/30 animate-ping" />
+                                    <div className="absolute inset-0 rounded-xl border-2 border-[#ef4444]/30 animate-ping" />
                                 </div>
                                 <p className="text-sm font-bold uppercase text-text-secondary">Loading FSLabs EFB…</p>
                             </div>
@@ -272,7 +273,23 @@ export const FslabsModule: React.FC = () => {
             )}
 
             {/* ── Bottom Toolbar ─────────────────────────────────────── */}
-            <div className="shrink-0 flex items-center justify-end px-6 md:px-8 py-4 border-t border-white/[0.05] bg-black/20 z-10">
+            <div className="shrink-0 flex items-center justify-between px-6 md:px-8 py-4 border-t border-white/[0.05] bg-black/20 z-10">
+                {/* EFB Switcher */}
+                <div className="flex items-center gap-2 bg-black/20 p-1 border border-white/[0.05] rounded-xl">
+                    <button 
+                        onClick={() => {
+                            localStorage.setItem('xpad-last-efb', 'fenix');
+                            useUIStore.getState().setActiveModule('fenix');
+                        }}
+                        className="p-1.5 px-4 text-xs font-bold uppercase rounded-lg text-text-secondary hover:text-text-primary transition-all"
+                    >
+                        Fenix
+                    </button>
+                    <button className="p-1.5 px-4 text-xs font-bold uppercase rounded-lg bg-white/[0.1] text-accent-blue shadow-md transition-all">
+                        FSLabs
+                    </button>
+                </div>
+
                 <div className="flex items-center gap-2 bg-black/20 p-1 border border-white/[0.05] rounded-xl">
                     <div className="flex items-center gap-2 px-3">
                         <span className={`w-2 h-2 rounded-full ${statusColor}`} />

@@ -9,10 +9,10 @@ export const RadarModule: React.FC = () => {
             {!iframeLoaded && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 text-center z-10 bg-transparent">
                     <div className="relative">
-                        <div className="w-16 h-16 rounded-xl bg-accent-blue/10 border border-accent-blue/20 flex items-center justify-center">
-                            <Radar className="w-7 h-7 text-accent-blue" />
+                        <div className="w-16 h-16 rounded-xl bg-[#3b82f6]/10 border border-[#3b82f6]/20 flex items-center justify-center">
+                            <Radar className="w-7 h-7 text-[#3b82f6]" />
                         </div>
-                        <div className="absolute inset-0 rounded-xl border-2 border-accent-blue/30 animate-ping" />
+                        <div className="absolute inset-0 rounded-xl border-2 border-[#3b82f6]/30 animate-ping" />
                     </div>
                     <p className="text-sm font-bold uppercase text-text-secondary">Loading Radar...</p>
                 </div>

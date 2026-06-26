@@ -9,10 +9,10 @@ export const FlightsimtoModule: React.FC = () => {
             {!iframeLoaded && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 text-center z-10 bg-transparent">
                     <div className="relative">
-                        <div className="w-16 h-16 rounded-xl bg-accent-teal/10 border border-accent-teal/20 flex items-center justify-center">
-                            <Download className="w-7 h-7 text-accent-teal" />
+                        <div className="w-16 h-16 rounded-xl bg-[#06b6d4]/10 border border-[#06b6d4]/20 flex items-center justify-center">
+                            <Download className="w-7 h-7 text-[#06b6d4]" />
                         </div>
-                        <div className="absolute inset-0 rounded-xl border-2 border-accent-teal/30 animate-ping" />
+                        <div className="absolute inset-0 rounded-xl border-2 border-[#06b6d4]/30 animate-ping" />
                     </div>
                     <p className="text-sm font-bold uppercase text-text-secondary">Loading Flightsim.to...</p>
                 </div>
