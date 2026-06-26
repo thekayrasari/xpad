@@ -6,18 +6,18 @@ import { useSettingsStore } from '../../stores/settingsStore';
 import { Plane, FileText, MessageSquare, Cloud, BookOpen, FileEdit, ClipboardList, Settings, Map as MapIcon, RefreshCw, AlertTriangle, Radar, Download, Navigation } from 'lucide-react';
 
 const apps: { id: ModuleType; label: string; icon: React.FC<any>; color: string }[] = [
-    { id: 'ofp', label: 'OFP', icon: FileText, color: 'text-accent-teal' },
-
-    { id: 'pdf', label: 'Manuals', icon: BookOpen, color: 'text-accent-orange' },
-    { id: 'radar', label: 'Radar', icon: Radar, color: 'text-accent-blue' },
-    { id: 'weather', label: 'Weather', icon: Cloud, color: 'text-text-primary' },
-    { id: 'aoc', label: 'Dispatch', icon: MessageSquare, color: 'text-accent-purple' },
-    { id: 'dispatch', label: 'Planner', icon: ClipboardList, color: 'text-accent-green' },
-    { id: 'notes', label: 'Notes', icon: FileEdit, color: 'text-accent-orange' },
-    { id: 'fenix', label: 'Fenix EFB', icon: Plane, color: 'text-accent-blue' },
+    { id: 'ofp', label: 'OFP', icon: FileText, color: 'text-accent-orange' },
+    { id: 'pdf', label: 'Manuals', icon: BookOpen, color: 'text-accent-pink' },
+    { id: 'radar', label: 'Radar', icon: Radar, color: 'text-accent-green' },
+    { id: 'weather', label: 'Weather', icon: Cloud, color: 'text-accent-blue' },
+    { id: 'aoc', label: 'Dispatch', icon: MessageSquare, color: 'text-accent-teal' },
+    { id: 'dispatch', label: 'Planner', icon: ClipboardList, color: 'text-text-secondary' },
+    { id: 'notes', label: 'Notes', icon: FileEdit, color: 'text-text-primary' },
+    { id: 'fenix', label: 'Fenix EFB', icon: Plane, color: 'text-accent-red' },
+    { id: 'fslabs', label: 'FSLabs EFB', icon: Plane, color: 'text-accent-blue' },
     { id: 'charts', label: 'Charts', icon: MapIcon, color: 'text-accent-purple' },
     { id: 'flightsimto', label: 'Flightsim.to', icon: Download, color: 'text-accent-teal' },
-    { id: 'nattrak', label: 'NatTrak', icon: Navigation, color: 'text-accent-blue' },
+    { id: 'nattrak', label: 'NatTrak', icon: Navigation, color: 'text-accent-orange' },
     { id: 'settings', label: 'Settings', icon: Settings, color: 'text-text-secondary' },
 ];
 

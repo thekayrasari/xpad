@@ -6,7 +6,7 @@
 
 ---
 
-**xPad** is a sleek, standalone Electronic Flight Bag (EFB) built to elevate your flight simulation experience. Seamlessly integrating with SimBrief and VATSIM, xPad provides an all-in-one cockpit companion accessible directly from your browser or desktop. Experience unparalleled situational awareness, intuitive flight planning, and seamless dispatch communications in a unified, beautifully designed interface.
+**xPad** is a sleek, standalone Electronic Flight Bag (EFB) built to elevate your flight simulation experience. Seamlessly integrating with SimBrief and VATSIM, xPad provides an all-in-one cockpit companion accessible directly from your browser or desktop. Experience unparalleled situational awareness, intuitive flight planning, and seamless dispatch communications in a unified, beautifully designed interface with advanced split-screen multitasking capabilities.
 
 ## 🚀 Features
 
@@ -14,10 +14,14 @@
 - **SimBrief Integration:** Automatically fetch and review your latest Operational Flight Plan using your Pilot ID. Access block fuel, routing, weights, alternates, and interactive waypoint tables.
 - **Advanced Dispatch Form:** A full-featured native flight planner. Generate your flight directly to SimBrief with complete control over parameters such as Aircraft Type, Registration, SELCAL, ETOPS, and more.
 
-### 🗺️ Live Map & VATSIM Traffic
-- **Interactive Moving Map:** Explore a sleek, dark CartoDB vector map. Your OFP route is dynamically rendered with custom waypoint icons.
-- **Global VATSIM Traffic:** View every online VATSIM pilot in real-time. Hover for callsigns, altitude, heading, and groundspeed.
-- **ATC Integration:** VATSpy database integration maps active controllers and FIR boundaries, keeping you informed about airspace control.
+### 🗺️ Live Radar & Traffic
+- **VATSIM Radar Integration:** Real-time visualization of global VATSIM traffic and active ATC controllers with our integrated radar map, bringing true-to-life situational awareness to your cockpit.
+
+### 🗺️ Flight Charts Support
+- **Multi-Provider Charting:** Seamlessly access your favorite charting providers right within xPad. Fully supports:
+  - **Navigraph Charts**
+  - **Chartfox**
+  - **MSFS Flight Planner**
 
 ### ☁️ Dispatch & Weather
 - **Live METAR & TAF:** Real-time weather reporting for departure, arrival, and alternates directly from the Aviation Weather Center.
@@ -27,13 +31,23 @@
 - **Hybrid ATC Notepad:** Keep track of clearances, frequencies, and scratchpad notes. Features a fully-interactive draw mode for quick annotations!
 - **PDF Manuals:** Upload and seamlessly navigate through your FCOM, QRH, SOPs, and briefing plates with our integrated PDF reader.
 
-### 🔗 Fenix Integration
-- Directly embed the Fenix A320/A330 built-in EFB from your local network. Enter your simulator PC's local IP address once, and let xPad handle the rest.
+### 🛩️ Embedded Aircraft EFBs
+Connect your favorite high-fidelity aircraft EFBs natively inside xPad using your local network:
+- **Fenix A320/A330 EFB Integration**
+- **FSLabs EFB Integration**
+
+### 🌐 Integrated Web Tools
+Quickly access essential simulation resources without leaving xPad:
+- **FlightSim.to:** Browse and download sceneries or liveries natively inside an iframe.
+- **VATSIM NatTrak:** Manage your oceanic clearances natively.
+
+### 💻 Advanced Multitasking
+- **Split-Screen Mode:** Run two modules side-by-side simultaneously. Keep your OFP open while taking notes, or monitor the VATSIM Radar while browsing charts!
 
 ## 🛠️ Tech Stack
 
 Built with a modern and highly-performant stack:
-- **Frontend:** React 19, TypeScript, Vite, Tailwind CSS v4, Zustand, Lucide React, Leaflet.js
+- **Frontend:** React 19, TypeScript, Vite, Tailwind CSS v4, Zustand, Lucide React, react-resizable-panels
 - **Backend:** Node.js, TypeScript, Express, WebSocket
 - **APIs:** SimBrief API, VATSIM Data API v3, Aviation Weather Center
 
