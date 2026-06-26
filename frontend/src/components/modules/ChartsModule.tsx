@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
 import { Map as MapIcon } from 'lucide-react';
+import { useSettingsStore } from '../../stores/settingsStore';
+
+const PROVIDER_URLS = {
+    msfs: 'https://planner.flightsimulator.com/',
+    navigraph: 'https://charts.navigraph.com/',
+    chartfox: 'https://chartfox.org/'
+};
 
 export const ChartsModule: React.FC = () => {
     const [iframeLoaded, setIframeLoaded] = useState(false);
+    const { chartsProvider } = useSettingsStore();
 
     return (
         <div className="w-full h-full bg-transparent flex flex-col overflow-hidden relative">
@@ -19,7 +27,7 @@ export const ChartsModule: React.FC = () => {
             )}
             {/* @ts-ignore - React doesn't natively include webview definitions */}
             <webview
-                src="https://planner.flightsimulator.com/"
+                src={PROVIDER_URLS[chartsProvider] || PROVIDER_URLS.msfs}
                 ref={(node: any) => {
                     if (node) {
                         node.addEventListener('dom-ready', () => setIframeLoaded(true));

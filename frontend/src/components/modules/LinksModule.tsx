@@ -1,13 +1,9 @@
 import React from 'react';
-import { ExternalLink, Globe, Plane, Map as MapIcon, Cloud, FileText } from 'lucide-react';
+import { ExternalLink, Globe, Plane, Cloud } from 'lucide-react';
 
 const links = [
-    { name: 'SimBrief', url: 'https://dispatch.simbrief.com/home', description: 'Flight dispatch and planning', icon: FileText, color: 'text-accent-teal' },
     { name: 'Flightsim.to', url: 'https://flightsim.to', description: 'Add-ons and mods', icon: Plane, color: 'text-accent-blue' },
-    { name: 'MSFS Planner', url: 'https://planner.flightsimulator.com/', description: 'Flight Simulator web planner', icon: MapIcon, color: 'text-accent-purple' },
     { name: 'NatTrak', url: 'https://nattrak.vatsim.net/', description: 'Oceanic clearance system', icon: Globe, color: 'text-accent-green' },
-    { name: 'Navigraph Charts', url: 'https://charts.navigraph.com/', description: 'Aviation charts and navigation', icon: MapIcon, color: 'text-accent-orange' },
-    { name: 'ChartFox', url: 'https://chartfox.org/', description: 'Free aviation charts', icon: MapIcon, color: 'text-text-primary' },
     { name: 'VATSIM Flight Plan', url: 'https://my.vatsim.net/pilots/flightplan', description: 'VATSIM flight plan filing', icon: Cloud, color: 'text-accent-red' },
 ];
 

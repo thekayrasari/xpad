@@ -27,11 +27,15 @@ export const DEFAULT_THEME_COLORS: ThemeColors = {
     peach: '#fab387'
 };
 
+export type ChartsProvider = 'navigraph' | 'chartfox' | 'msfs';
+
 interface SettingsState {
     simbriefId: string;
     themeColors: ThemeColors;
+    chartsProvider: ChartsProvider;
     setSimbriefId: (id: string) => void;
     setThemeColors: (colors: Partial<ThemeColors>) => void;
+    setChartsProvider: (provider: ChartsProvider) => void;
     resetSettings: () => void;
 }
 
@@ -40,11 +44,13 @@ export const useSettingsStore = create<SettingsState>()(
         (set) => ({
             simbriefId: '',
             themeColors: DEFAULT_THEME_COLORS,
+            chartsProvider: 'msfs',
             setSimbriefId: (id) => set({ simbriefId: id }),
             setThemeColors: (colors) => set((state) => ({ 
                 themeColors: { ...state.themeColors, ...colors } 
             })),
-            resetSettings: () => set({ simbriefId: '', themeColors: DEFAULT_THEME_COLORS }),
+            setChartsProvider: (provider) => set({ chartsProvider: provider }),
+            resetSettings: () => set({ simbriefId: '', themeColors: DEFAULT_THEME_COLORS, chartsProvider: 'msfs' }),
         }),
         {
             name: 'xpad-settings', // key in localStorage
