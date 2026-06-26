@@ -6,19 +6,18 @@ import { useSettingsStore } from '../../stores/settingsStore';
 import { Plane, FileText, MessageSquare, Cloud, BookOpen, FileEdit, ClipboardList, Settings, Map as MapIcon, RefreshCw, AlertTriangle, Radar, Download, Navigation } from 'lucide-react';
 
 const apps: { id: ModuleType; label: string; icon: React.FC<any>; color: string }[] = [
-    { id: 'ofp', label: 'OFP', icon: FileText, color: 'text-accent-orange' },
-    { id: 'pdf', label: 'Manuals', icon: BookOpen, color: 'text-accent-pink' },
-    { id: 'radar', label: 'Radar', icon: Radar, color: 'text-accent-green' },
-    { id: 'weather', label: 'Weather', icon: Cloud, color: 'text-accent-blue' },
-    { id: 'aoc', label: 'Dispatch', icon: MessageSquare, color: 'text-accent-teal' },
-    { id: 'dispatch', label: 'Planner', icon: ClipboardList, color: 'text-text-secondary' },
-    { id: 'notes', label: 'Notes', icon: FileEdit, color: 'text-text-primary' },
-    { id: 'fenix', label: 'Fenix EFB', icon: Plane, color: 'text-accent-red' },
-    { id: 'fslabs', label: 'FSLabs EFB', icon: Plane, color: 'text-accent-blue' },
-    { id: 'charts', label: 'Charts', icon: MapIcon, color: 'text-accent-purple' },
-    { id: 'flightsimto', label: 'Flightsim.to', icon: Download, color: 'text-accent-teal' },
-    { id: 'nattrak', label: 'NatTrak', icon: Navigation, color: 'text-accent-orange' },
-    { id: 'settings', label: 'Settings', icon: Settings, color: 'text-text-secondary' },
+    { id: 'ofp', label: 'OFP', icon: FileText, color: 'text-[#f97316]' }, // Orange
+    { id: 'pdf', label: 'Manuals', icon: BookOpen, color: 'text-[#a855f7]' }, // Purple
+    { id: 'radar', label: 'Radar', icon: Radar, color: 'text-[#3b82f6]' }, // Blue
+    { id: 'weather', label: 'Weather', icon: Cloud, color: 'text-[#0ea5e9]' }, // Light Blue
+    { id: 'aoc', label: 'Dispatch', icon: MessageSquare, color: 'text-[#f43f5e]' }, // Rose
+    { id: 'dispatch', label: 'Planner', icon: ClipboardList, color: 'text-[#10b981]' }, // Emerald
+    { id: 'notes', label: 'Notes', icon: FileEdit, color: 'text-[#eab308]' }, // Yellow
+    { id: 'fenix', label: 'Aircraft EFB', icon: Plane, color: 'text-[#ef4444]' }, // Red
+    { id: 'charts', label: 'Charts', icon: MapIcon, color: 'text-[#ec4899]' }, // Pink
+    { id: 'flightsimto', label: 'Flightsim.to', icon: Download, color: 'text-[#06b6d4]' }, // Cyan
+    { id: 'nattrak', label: 'NatTrak', icon: Navigation, color: 'text-[#14b8a6]' }, // Teal
+    { id: 'settings', label: 'Settings', icon: Settings, color: 'text-[#94a3b8]' }, // Slate
 ];
 
 export const HomeModule: React.FC = () => {
@@ -80,7 +79,14 @@ export const HomeModule: React.FC = () => {
                         return (
                             <button
                                 key={app.id}
-                                onClick={() => setActiveModule(app.id)}
+                                onClick={() => {
+                                    if (app.id === 'fenix') {
+                                        const lastEfb = localStorage.getItem('xpad-last-efb') || 'fenix';
+                                        setActiveModule(lastEfb as ModuleType);
+                                    } else {
+                                        setActiveModule(app.id);
+                                    }
+                                }}
                                 className="group flex flex-col items-center gap-3 transition-transform duration-200 active:scale-95"
                             >
                                 <div className="w-20 h-20 rounded-[1.75rem] glass-button flex items-center justify-center">

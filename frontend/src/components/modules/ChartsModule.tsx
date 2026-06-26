@@ -17,10 +17,10 @@ export const ChartsModule: React.FC = () => {
             {!iframeLoaded && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 text-center z-10 bg-transparent">
                     <div className="relative">
-                        <div className="w-16 h-16 rounded-xl bg-accent-purple/10 border border-accent-purple/20 flex items-center justify-center">
-                            <MapIcon className="w-7 h-7 text-accent-purple" />
+                        <div className="w-16 h-16 rounded-xl bg-[#ec4899]/10 border border-[#ec4899]/20 flex items-center justify-center">
+                            <MapIcon className="w-7 h-7 text-[#ec4899]" />
                         </div>
-                        <div className="absolute inset-0 rounded-xl border-2 border-accent-purple/30 animate-ping" />
+                        <div className="absolute inset-0 rounded-xl border-2 border-[#ec4899]/30 animate-ping" />
                     </div>
                     <p className="text-sm font-bold uppercase text-text-secondary">Loading Charts...</p>
                 </div>
