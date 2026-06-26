@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import { Save, AlertTriangle } from 'lucide-react';
-import { useSettingsStore, DEFAULT_THEME_COLORS, type ThemeColors } from '../../stores/settingsStore';
+import { useSettingsStore, DEFAULT_THEME_COLORS, type ThemeColors, type ChartsProvider } from '../../stores/settingsStore';
 
 export const SettingsModule: React.FC = () => {
-    const { simbriefId, themeColors, setSimbriefId, setThemeColors, resetSettings } = useSettingsStore();
+    const { simbriefId, themeColors, chartsProvider, setSimbriefId, setThemeColors, setChartsProvider, resetSettings } = useSettingsStore();
     
     // Local state for inputs before saving
     const [localSimbrief, setLocalSimbrief] = useState(simbriefId);
     const [localTheme, setLocalTheme] = useState<ThemeColors>(themeColors);
+    const [localChartsProvider, setLocalChartsProvider] = useState<ChartsProvider>(chartsProvider);
     const [saved, setSaved] = useState(false);
 
     const handleSave = () => {
         setSimbriefId(localSimbrief);
         setThemeColors(localTheme);
+        setChartsProvider(localChartsProvider);
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);
     };
@@ -22,6 +24,7 @@ export const SettingsModule: React.FC = () => {
             resetSettings();
             setLocalSimbrief('');
             setLocalTheme(DEFAULT_THEME_COLORS);
+            setLocalChartsProvider('msfs');
             localStorage.clear();
         }
     };
@@ -51,9 +54,23 @@ export const SettingsModule: React.FC = () => {
                         </p>
                     </div>
 
-
-
-
+                    <div className="space-y-2 pt-4 border-t border-white/[0.05]">
+                        <label className="block text-xs font-bold uppercase text-text-secondary">
+                            Charts Provider
+                        </label>
+                        <select
+                            value={localChartsProvider}
+                            onChange={(e) => setLocalChartsProvider(e.target.value as ChartsProvider)}
+                            className="w-full bg-dark-bg border border-white/[0.1] rounded-md px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue focus:ring-1 focus:ring-accent-blue transition-colors"
+                        >
+                            <option value="msfs">MSFS Flight Planner</option>
+                            <option value="navigraph">Navigraph Charts</option>
+                            <option value="chartfox">Chartfox</option>
+                        </select>
+                        <p className="text-xs text-text-secondary/70">
+                            Select which provider opens when you click the Charts app.
+                        </p>
+                    </div>
 
                     <div className="pt-4 border-t border-white/[0.05] flex justify-end">
                         <button
