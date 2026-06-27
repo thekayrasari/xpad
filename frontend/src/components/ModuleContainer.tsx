@@ -16,6 +16,7 @@ import { FslabsModule } from './modules/FslabsModule';
 import { ChartsModule } from './modules/ChartsModule';
 import { FlightsimtoModule } from './modules/FlightsimtoModule';
 import { NattrakModule } from './modules/NattrakModule';
+import { VPilotModule } from './modules/VPilotModule';
 
 const Pane: React.FC<{ active: ModuleType }> = ({ active }) => {
     const [mounted, setMounted] = useState<Set<string>>(new Set([active]));
@@ -46,6 +47,7 @@ const Pane: React.FC<{ active: ModuleType }> = ({ active }) => {
             {mounted.has('flightsimto') && <div className={`w-full h-full animate-page-enter ${active === 'flightsimto' ? 'block' : 'hidden'}`}><FlightsimtoModule /></div>}
             {mounted.has('nattrak')   && <div className={`w-full h-full animate-page-enter ${active === 'nattrak' ? 'block' : 'hidden'}`}><NattrakModule /></div>}
             {mounted.has('settings')  && <div className={`w-full h-full animate-page-enter ${active === 'settings' ? 'block' : 'hidden'}`}><SettingsModule /></div>}
+            {mounted.has('vpilot')    && <div className={`w-full h-full animate-page-enter ${active === 'vpilot' ? 'block' : 'hidden'}`}><VPilotModule /></div>}
         </Suspense>
     );
 };

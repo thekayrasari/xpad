@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Platforms>x86;x64</Platforms>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- We will need a reference to the vPilot plugin API. Users typically reference this locally from their vPilot installation. -->
+    <Reference Include="RossCarlson.Vatsim.Vpilot.Plugins">
+      <HintPath>C:\Program Files\Steam\steamapps\common\vPilot\RossCarlson.Vatsim.Vpilot.Plugins.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="WebSocketSharp-NonPreRelease" Version="1.0.0" />
+  </ItemGroup>
+
+</Project>
