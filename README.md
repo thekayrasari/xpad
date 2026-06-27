@@ -41,6 +41,12 @@ Quickly access essential simulation resources without leaving xPad:
 - **FlightSim.to:** Browse and download sceneries or liveries natively inside an iframe.
 - **VATSIM NatTrak:** Manage your oceanic clearances natively.
 
+### 🚀 App Launcher & Automation
+- **Flight Sim & Tools Launcher:** A dedicated interface to start Microsoft Flight Simulator (2020 & 2024, Steam/Xbox versions), vPilot, and BeyondATC directly from the EFB. Features intelligent path auto-detection and customizable path settings.
+
+### 📡 VATSIM & Network Connectivity
+- **vPilot Integration:** Native backend integration with the vPilot desktop client to monitor VATSIM network connection status, current callsign, and active COM frequencies directly inside the EFB.
+
 ### 💻 Advanced Multitasking
 - **Split-Screen Mode:** Run two modules side-by-side simultaneously. Keep your OFP open while taking notes, or monitor the VATSIM Radar while browsing charts!
 
