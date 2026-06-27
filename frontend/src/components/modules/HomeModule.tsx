@@ -3,7 +3,7 @@ import { useUIStore, type ModuleType } from '../../stores/uiStore';
 import { useOFPStore } from '../../stores/ofpStore';
 import { useWeatherStore } from '../../stores/weatherStore';
 import { useSettingsStore } from '../../stores/settingsStore';
-import { Plane, FileText, MessageSquare, Cloud, BookOpen, FileEdit, ClipboardList, Settings, Map as MapIcon, RefreshCw, AlertTriangle, Radar, Download, Navigation } from 'lucide-react';
+import { Plane, FileText, MessageSquare, Cloud, BookOpen, FileEdit, ClipboardList, Settings, Map as MapIcon, RefreshCw, AlertTriangle, Radar, Download, Navigation, Radio } from 'lucide-react';
 
 const apps: { id: ModuleType; label: string; icon: React.FC<any>; color: string }[] = [
     { id: 'ofp', label: 'OFP', icon: FileText, color: 'text-[#f97316]' }, // Orange
@@ -17,6 +17,7 @@ const apps: { id: ModuleType; label: string; icon: React.FC<any>; color: string 
     { id: 'charts', label: 'Charts', icon: MapIcon, color: 'text-[#ec4899]' }, // Pink
     { id: 'flightsimto', label: 'Flightsim.to', icon: Download, color: 'text-[#06b6d4]' }, // Cyan
     { id: 'nattrak', label: 'NatTrak', icon: Navigation, color: 'text-[#14b8a6]' }, // Teal
+    { id: 'vpilot', label: 'vPilot', icon: Radio, color: 'text-[#8b5cf6]' }, // Violet
     { id: 'settings', label: 'Settings', icon: Settings, color: 'text-[#94a3b8]' }, // Slate
 ];
 

@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "m/dfIT08V5I=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\theka\\Projects\\xpad\\vpilot-plugin\\xPadPlugin.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\theka\\.nuget\\packages\\microsoft.netframework.referenceassemblies\\1.0.3\\microsoft.netframework.referenceassemblies.1.0.3.nupkg.sha512",
+    "C:\\Users\\theka\\.nuget\\packages\\microsoft.netframework.referenceassemblies.net472\\1.0.3\\microsoft.netframework.referenceassemblies.net472.1.0.3.nupkg.sha512",
+    "C:\\Users\\theka\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
+    "C:\\Users\\theka\\.nuget\\packages\\websocketsharp-nonprerelease\\1.0.0\\websocketsharp-nonprerelease.1.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,13 @@
+C:\Users\theka\Projects\xpad\vpilot-plugin\obj\Debug\net472\xPadPlugin.csproj.AssemblyReference.cache
+C:\Users\theka\Projects\xpad\vpilot-plugin\obj\Debug\net472\xPadPlugin.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\theka\Projects\xpad\vpilot-plugin\obj\Debug\net472\xPadPlugin.AssemblyInfoInputs.cache
+C:\Users\theka\Projects\xpad\vpilot-plugin\obj\Debug\net472\xPadPlugin.AssemblyInfo.cs
+C:\Users\theka\Projects\xpad\vpilot-plugin\obj\Debug\net472\xPadPlugin.csproj.CoreCompileInputs.cache
+C:\Users\theka\Projects\xpad\vpilot-plugin\obj\Debug\net472\xPadPlugin.sourcelink.json
+C:\Users\theka\Projects\xpad\vpilot-plugin\bin\Debug\net472\xPadPlugin.dll
+C:\Users\theka\Projects\xpad\vpilot-plugin\bin\Debug\net472\xPadPlugin.pdb
+C:\Users\theka\Projects\xpad\vpilot-plugin\bin\Debug\net472\Newtonsoft.Json.dll
+C:\Users\theka\Projects\xpad\vpilot-plugin\bin\Debug\net472\websocket-sharp.dll
+C:\Users\theka\Projects\xpad\vpilot-plugin\obj\Debug\net472\xPadPlugin.csproj.Up2Date
+C:\Users\theka\Projects\xpad\vpilot-plugin\obj\Debug\net472\xPadPlugin.dll
+C:\Users\theka\Projects\xpad\vpilot-plugin\obj\Debug\net472\xPadPlugin.pdb

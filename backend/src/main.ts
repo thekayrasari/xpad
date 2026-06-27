@@ -57,7 +57,10 @@ async function proxyAWC(endpoint: string, req: express.Request, res: express.Res
 app.get('/api/weather/metar', (req, res) => proxyAWC('metar', req, res));
 app.get('/api/weather/taf', (req, res) => proxyAWC('taf', req, res));
 
+import { VPilotInstallerService } from './services/vpilotInstaller';
+
 // Initialize services
+VPilotInstallerService.installPlugin();
 const flightService = new FlightDataService();
 const wsController = new WebSocketController(WS_PORT, flightService);
 

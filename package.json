@@ -1,6 +1,6 @@
 {
   "name": "xpad",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "A standalone, lightweight Electronic Flight Bag (EFB) built for flight simulation.",
   "main": "main.js",
   "scripts": {
@@ -35,7 +35,8 @@
       "app_icon.ico",
       "backend/.env",
       "backend/dist/**/*",
-      "frontend/dist/**/*"
+      "frontend/dist/**/*",
+      "plugins/**/*"
     ],
     "win": {
       "target": "nsis",
