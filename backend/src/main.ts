@@ -4,6 +4,7 @@ import path from 'path';
 import dotenv from 'dotenv';
 import { FlightDataService } from './services/flightDataService';
 import { WebSocketController } from './controllers/websocketController';
+import { LauncherService } from './services/launcherService';
 
 // Handle global exceptions
 process.on('uncaughtException', (err: any) => {
@@ -15,6 +16,7 @@ const envPath = path.join(__dirname, '../.env');
 dotenv.config({ path: envPath });
 
 const app = express();
+app.use(express.json());
 
 const isDev = !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
 if (isDev) {
@@ -56,6 +58,35 @@ async function proxyAWC(endpoint: string, req: express.Request, res: express.Res
 
 app.get('/api/weather/metar', (req, res) => proxyAWC('metar', req, res));
 app.get('/api/weather/taf', (req, res) => proxyAWC('taf', req, res));
+
+// ── Launcher API ─────────────────────────────────────────────────────────────
+const launcherService = new LauncherService();
+
+app.get('/api/launcher/settings', (req, res) => {
+    res.json(launcherService.getSettings());
+});
+
+app.post('/api/launcher/settings', (req, res) => {
+    const settings = req.body;
+    if (Array.isArray(settings)) {
+        launcherService.updateSettings(settings);
+        res.json({ success: true });
+    } else {
+        res.status(400).json({ error: 'Invalid settings format' });
+    }
+});
+
+app.post('/api/launcher/launch', async (req, res) => {
+    const { appId } = req.body;
+    if (!appId) return res.status(400).json({ error: 'appId is required' });
+    try {
+        await launcherService.launchApp(appId);
+        res.json({ success: true });
+    } catch (err: any) {
+        console.error('Launch error:', err);
+        res.status(500).json({ error: err.message || 'Failed to launch app' });
+    }
+});
 
 import { VPilotInstallerService } from './services/vpilotInstaller';
 
