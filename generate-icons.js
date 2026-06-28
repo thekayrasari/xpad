@@ -1,40 +1,14 @@
-const { app, BrowserWindow } = require('electron');
+const { app, nativeImage } = require('electron');
 const fs = require('fs');
 const path = require('path');
 
-const svgPath = path.join(__dirname, 'frontend', 'logo.svg');
+const pngPath = path.join(__dirname, 'frontend', 'logo.png');
 
-// Check if SVG exists
-if (!fs.existsSync(svgPath)) {
-  console.error(`Error: SVG file not found at ${svgPath}`);
+// Check if PNG exists
+if (!fs.existsSync(pngPath)) {
+  console.error(`Error: PNG file not found at ${pngPath}`);
   process.exit(1);
 }
-
-// Read SVG content and create a data URL
-const svgContent = fs.readFileSync(svgPath, 'utf8');
-const dataUrl = `data:text/html;charset=utf-8,${encodeURIComponent(`
-<!DOCTYPE html>
-<html>
-<head>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background: transparent;
-    }
-    svg {
-      width: 100vw;
-      height: 100vh;
-      display: block;
-    }
-  </style>
-</head>
-<body>
-  ${svgContent}
-</body>
-</html>
-`)}`;
 
 function createIco(pngBuffers) {
   const header = Buffer.alloc(6);
@@ -64,25 +38,13 @@ function createIco(pngBuffers) {
 }
 
 app.whenReady().then(async () => {
-  // Create a 512x512 window (large enough to avoid Windows min-size constraints)
-  const win = new BrowserWindow({
-    width: 512,
-    height: 512,
-    show: false,
-    useContentSize: true,
-    frame: false,
-    webPreferences: {
-      offscreen: true,
-      transparent: true
-    }
-  });
+  const baseNativeImg = nativeImage.createFromPath(pngPath);
 
-  await win.loadURL(dataUrl);
-
-  // Allow rendering pipeline to catch up
-  await new Promise(resolve => setTimeout(resolve, 500));
-
-  const baseNativeImg = await win.webContents.capturePage();
+  if (baseNativeImg.isEmpty()) {
+    console.error(`Error: Failed to load PNG image from ${pngPath}`);
+    app.quit();
+    return;
+  }
 
   const resolutions = [16, 32, 48, 64, 128, 256, 512];
   const pngBuffers = [];
