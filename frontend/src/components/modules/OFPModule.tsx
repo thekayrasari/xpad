@@ -16,15 +16,10 @@ export const OFPModule: React.FC = () => {
 
 
     // Memoize expensive HTML sanitization — only recomputes when textOFP changes
-    const cleanOFP = useMemo(() =>
-        data?.textOFP
-            .replace(/<[^>]+>/g, '')
-            .replace(/&amp;/g, '&')
-            .replace(/&lt;/g, '<')
-            .replace(/&gt;/g, '>')
-            .replace(/&nbsp;/g, ' ')
-            .trim() ?? '',
-    [data?.textOFP]);
+    const cleanOFP = useMemo(() => {
+        if (!data?.textOFP) return '';
+        return new DOMParser().parseFromString(data.textOFP, 'text/html').body.textContent ?? '';
+    }, [data?.textOFP]);
 
 
 

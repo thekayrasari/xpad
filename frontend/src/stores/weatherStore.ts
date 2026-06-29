@@ -74,6 +74,13 @@ interface AWCRaw {
     rawTAF?: string;
 }
 
+function parseWindDir(wdir?: string | number, wind_dir_degrees?: number): number | null {
+    if (wdir === 'VRB') return null;
+    if (wdir != null) return Number(wdir);
+    if (wind_dir_degrees != null) return Number(wind_dir_degrees);
+    return null;
+}
+
 function parseMetar(raw: AWCRaw): MetarData {
     // AWC API v2 field names differ from v1
     // v2: temp, dewp, wdir, wspd, wgst, visib, altim, rawOb, icaoId, flightCategory
@@ -98,7 +105,7 @@ function parseMetar(raw: AWCRaw): MetarData {
         obsTime: raw.obsTime ?? raw.observation_time ?? '',
         tempC: raw.temp ?? raw.temp_c ?? null,
         dewpointC: raw.dewp ?? raw.dewpoint_c ?? null,
-        windDir: raw.wdir === 'VRB' ? null : (raw.wdir !== undefined && raw.wdir !== null ? Number(raw.wdir) : (raw.wind_dir_degrees !== undefined && raw.wind_dir_degrees !== null ? Number(raw.wind_dir_degrees) : null)),
+        windDir: parseWindDir(raw.wdir, raw.wind_dir_degrees),
         windSpeedKt: raw.wspd ?? raw.wind_speed_kt ?? null,
         windGustKt: raw.wgst ?? raw.wind_gust_kt ?? null,
         visibilitySm: raw.visib ?? raw.visibility_statute_mi ?? null,

@@ -48,7 +48,13 @@ export const useVPilotStore = create<VPilotStoreState>((set) => ({
     sendWsMessage: null,
     setConnectionStatus: (status) => set({ isConnected: status }),
     setFrequencies: (com1, com2) => set({ com1, com2 }),
-    addMessage: (msg) => set((state) => ({ messages: [...state.messages, msg] })),
+    addMessage: (msg) => set((state) => {
+        const newMessages = [...state.messages, msg];
+        if (newMessages.length > 500) {
+            newMessages.splice(0, newMessages.length - 500);
+        }
+        return { messages: newMessages };
+    }),
     addController: (ctrl) => set((state) => ({ 
         controllers: state.controllers.some(c => c.callsign === ctrl.callsign) ? state.controllers : [...state.controllers, ctrl] 
     })),

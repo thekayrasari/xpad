@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.ComponentModel.Composition;
 using RossCarlson.Vatsim.Vpilot.Plugins;
 using WebSocketSharp;
@@ -9,10 +10,17 @@ using Newtonsoft.Json.Linq;
 namespace xPadPlugin
 {
     [Export(typeof(IPlugin))]
-    public class XPadBridge : IPlugin
+    public class XPadBridge : IPlugin, IDisposable
     {
         public string Name => "xPad Bridge";
         private WebSocket _ws;
+        private Timer _reconnectTimer;
+        private IBroker _broker;
+
+        private string FormatFrequency(int f)
+        {
+            return "1" + (f / 1000).ToString() + "." + (f % 1000).ToString("000");
+        }
 
         private void SafeSend(string data, IBroker broker)
         {
@@ -38,6 +46,7 @@ namespace xPadPlugin
 
         public void Initialize(IBroker broker)
         {
+            _broker = broker;
             // Connect to xPad backend
             _ws = new WebSocket("ws://127.0.0.1:8080");
             _ws.OnMessage += (sender, e) =>
@@ -67,7 +76,10 @@ namespace xPadPlugin
                 }
             };
             
-            try { _ws.Connect(); } catch { }
+            _ws.OnClose += (sender, e) => ScheduleReconnect();
+            _ws.OnError += (sender, e) => ScheduleReconnect();
+
+            try { _ws.Connect(); } catch { ScheduleReconnect(); }
 
             broker.NetworkConnected += (sender, e) =>
             {
@@ -86,8 +98,7 @@ namespace xPadPlugin
                 string freqStr = "";
                 if (e.Frequencies != null && e.Frequencies.Length > 0)
                 {
-                    int f = e.Frequencies[0];
-                    freqStr = "1" + (f / 1000).ToString() + "." + (f % 1000).ToString("000");
+                    freqStr = FormatFrequency(e.Frequencies[0]);
                 }
                 var payload = new { topic = "vpilot_message_received", payload = new { sender = e.From, content = e.Message, isPrivate = false, isSentByMe = false, tab = "ATC", frequency = freqStr } };
                 broker.PostDebugMessage("xPad: RadioMsg from " + e.From + " on " + freqStr);
@@ -117,7 +128,7 @@ namespace xPadPlugin
 
             broker.ControllerAdded += (sender, e) =>
             {
-                string freqStr = "1" + (e.Frequency / 1000).ToString() + "." + (e.Frequency % 1000).ToString("000");
+                string freqStr = FormatFrequency(e.Frequency);
                 var payload = new { topic = "vpilot_controller_added", payload = new { callsign = e.Callsign, frequency = freqStr } };
                 SafeSend(JsonConvert.SerializeObject(payload), broker);
             };
@@ -130,10 +141,50 @@ namespace xPadPlugin
 
             broker.ControllerFrequencyChanged += (sender, e) =>
             {
-                string freqStr = "1" + (e.NewFrequency / 1000).ToString() + "." + (e.NewFrequency % 1000).ToString("000");
+                string freqStr = FormatFrequency(e.NewFrequency);
                 var payload = new { topic = "vpilot_controller_updated", payload = new { callsign = e.Callsign, frequency = freqStr } };
                 SafeSend(JsonConvert.SerializeObject(payload), broker);
             };
+        }
+
+        private void ScheduleReconnect()
+        {
+            if (_reconnectTimer == null)
+            {
+                _reconnectTimer = new Timer(ReconnectCallback, null, 5000, Timeout.Infinite);
+            }
+            else
+            {
+                _reconnectTimer.Change(5000, Timeout.Infinite);
+            }
+        }
+
+        private void ReconnectCallback(object state)
+        {
+            try
+            {
+                if (_ws != null && _ws.ReadyState != WebSocketState.Open)
+                {
+                    _ws.Connect();
+                }
+            }
+            catch
+            {
+                ScheduleReconnect();
+            }
+        }
+
+        public void Dispose()
+        {
+            _reconnectTimer?.Dispose();
+            if (_ws != null)
+            {
+                if (_ws.ReadyState == WebSocketState.Open)
+                {
+                    _ws.Close();
+                }
+                _ws = null;
+            }
         }
     }
 }

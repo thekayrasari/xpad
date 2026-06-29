@@ -15,6 +15,7 @@ export type FlightDataCallback = (data: FlightData) => void;
 export class FlightDataService {
     private subscribers = new Set<FlightDataCallback>();
     private handle: SimConnectConnection | null = null;
+    private reconnectTimeout: NodeJS.Timeout | null = null;
     private currentData: FlightData = {
         altitude: 0,
         latitude: 0,
@@ -39,6 +40,16 @@ export class FlightDataService {
         return mhz.toFixed(3);
     }
 
+    private scheduleReconnect() {
+        if (this.reconnectTimeout) {
+            clearTimeout(this.reconnectTimeout);
+        }
+        this.reconnectTimeout = setTimeout(() => {
+            this.reconnectTimeout = null;
+            this.connect();
+        }, 5000);
+    }
+
     private connect() {
         open('xPad EFB', Protocol.FSX_SP2)
             .then(({ recvOpen, handle }) => {
@@ -49,12 +60,12 @@ export class FlightDataService {
                 handle.on('quit', () => {
                     console.log('MSFS quit');
                     this.handle = null;
-                    setTimeout(() => this.connect(), 5000); // Reconnect loop
+                    this.scheduleReconnect();
                 });
                 handle.on('close', () => {
                     console.log('SimConnect connection closed');
                     this.handle = null;
-                    setTimeout(() => this.connect(), 5000);
+                    this.scheduleReconnect();
                 });
 
                 handle.mapClientEventToSimEvent(this.EVENT_ID_SET_COM, 'COM_RADIO_SET_HZ');
@@ -68,7 +79,7 @@ export class FlightDataService {
                 handle.addToDataDefinition(this.DEFINITION_ID, 'COM ACTIVE FREQUENCY:1', 'MHz', SimConnectDataType.FLOAT64);
                 handle.addToDataDefinition(this.DEFINITION_ID, 'COM ACTIVE FREQUENCY:2', 'MHz', SimConnectDataType.FLOAT64);
 
-                handle.requestDataOnSimObject(this.REQUEST_ID, this.DEFINITION_ID, SimConnectConstants.OBJECT_ID_USER, SimConnectPeriod.SIM_FRAME);
+                handle.requestDataOnSimObject(this.REQUEST_ID, this.DEFINITION_ID, SimConnectConstants.OBJECT_ID_USER, SimConnectPeriod.SECOND);
 
                 handle.on('simObjectData', (recvSimObjectData: any) => {
                     if (recvSimObjectData.requestID === this.REQUEST_ID) {
@@ -92,7 +103,7 @@ export class FlightDataService {
             })
             .catch((error: any) => {
                 console.log('SimConnect connection failed, retrying in 5 seconds...');
-                setTimeout(() => this.connect(), 5000);
+                this.scheduleReconnect();
             });
     }
 
@@ -114,8 +125,13 @@ export class FlightDataService {
     }
 
     public shutdown() {
+        if (this.reconnectTimeout) {
+            clearTimeout(this.reconnectTimeout);
+            this.reconnectTimeout = null;
+        }
         if (this.handle) {
             // No explicit close exposed easily, GC will handle it if we drop refs, or we can leave it
+            this.handle = null;
         }
     }
 }

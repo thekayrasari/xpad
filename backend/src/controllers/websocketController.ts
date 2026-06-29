@@ -1,10 +1,15 @@
 import { WebSocketServer, WebSocket } from 'ws';
 import { FlightDataService } from '../services/flightDataService';
 
+export interface ConnectionStatus {
+    isConnected: boolean;
+    callsign?: string;
+}
+
 export class WebSocketController {
     private wss: WebSocketServer;
     private cleanupFlight: () => void;
-    private lastConnectionStatus: unknown = null;
+    private lastConnectionStatus: ConnectionStatus | null = null;
 
     constructor(port: number, flightService: FlightDataService) {
         this.wss = new WebSocketServer({ port });
