@@ -32,6 +32,8 @@ function createWindow() {
       if (retryCount < MAX_RETRIES) {
         retryCount++;
         setTimeout(tryLoad, 500);
+      } else {
+        mainWindow.loadURL('data:text/html;charset=utf-8,<h2>xPad Error: Failed to connect to backend server after multiple retries.</h2><p>Please restart the application. If the problem persists, check the logs.</p>');
       }
     });
   };

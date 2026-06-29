@@ -77,7 +77,7 @@ export function useFlightDataConnection(url: string = 'ws://localhost:8080') {
             ws.onclose = () => {
                 console.log('Disconnected from Flight Data WebSocket');
                 setConnectionStatus(false);
-                useVPilotStore.getState().setSendWsMessage(null as any);
+                useVPilotStore.getState().setSendWsMessage(() => {});
                 wsRef.current = null;
                 
                 // Exponential backoff: 3s, 6s, 12s, up to max 30s

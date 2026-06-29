@@ -10,7 +10,8 @@ export interface AppConfig {
 }
 
 export class LauncherService {
-    private readonly settingsPath = path.join(__dirname, '../../../../launcher-settings.json');
+    private readonly settingsDir = path.join(process.env.APPDATA || process.env.USERPROFILE || __dirname, 'xPad');
+    private readonly settingsPath = path.join(this.settingsDir, 'launcher-settings.json');
     private settings: AppConfig[] = [];
 
     // Default configuration with common paths
@@ -62,6 +63,9 @@ export class LauncherService {
 
     private saveSettings() {
         try {
+            if (!fs.existsSync(this.settingsDir)) {
+                fs.mkdirSync(this.settingsDir, { recursive: true });
+            }
             fs.writeFileSync(this.settingsPath, JSON.stringify(this.settings, null, 2), 'utf-8');
         } catch (e) {
             console.error('Failed to save launcher settings:', e);
@@ -76,12 +80,18 @@ export class LauncherService {
             }
 
             if (app.type === 'shell') {
-                exec(`explorer.exe ${app.path}`, (error) => {
-                    if (error) {
-                        return reject(error);
-                    }
-                    resolve();
+                const child = spawn('explorer.exe', [app.path], {
+                    shell: false,
+                    detached: true,
+                    stdio: 'ignore'
                 });
+                
+                child.on('error', (err) => {
+                    reject(err);
+                });
+                
+                child.unref();
+                resolve();
             } else {
                 // Determine the working directory to prevent missing DLLs
                 const dir = path.dirname(app.path);

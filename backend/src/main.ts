@@ -4,12 +4,17 @@ import path from 'path';
 import dotenv from 'dotenv';
 import { FlightDataService } from './services/flightDataService';
 import { WebSocketController } from './controllers/websocketController';
-import { LauncherService } from './services/launcherService';
+import { VPilotInstallerService } from './services/vpilotInstaller';
+import { weatherRouter } from './routes/weather';
+import { launcherRouter } from './routes/launcher';
 
 // Handle global exceptions
 process.on('uncaughtException', (err: any) => {
-    console.error("Fatal Unhandled Exception:", err);
-    process.exit(1);
+    console.error("Fatal Uncaught Exception:", err);
+});
+
+process.on('unhandledRejection', (reason: any, promise: Promise<any>) => {
+    console.error("Fatal Unhandled Rejection at:", promise, "reason:", reason);
 });
 
 const envPath = path.join(__dirname, '../.env');
@@ -22,8 +27,8 @@ const isDev = !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
 if (isDev) {
     app.use(cors({ origin: 'http://localhost:5173' })); // Allow Vite dev server
 } else {
-    // In production, the frontend is served locally via express.static, 
-    // so no CORS is needed. Wildcard CORS is disabled for security.
+    // In production, the frontend is served locally via express.static on the same origin, 
+    // so no CORS is needed. Wildcard CORS is disabled for security by setting origin: false.
     app.use(cors({ origin: false })); 
 }
 
@@ -38,60 +43,15 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', mockMode: true });
 });
 
-// ── Aviation Weather Proxy ─────────────────────────────────────────────────────
-// AWC blocks CORS from browsers; we proxy the request server-side instead.
-async function proxyAWC(endpoint: string, req: express.Request, res: express.Response) {
-    const ids = req.query.ids as string;
-    if (!ids) return res.status(400).json({ error: 'ids param required' });
-    try {
-        const url = `https://aviationweather.gov/api/data/${endpoint}?ids=${encodeURIComponent(ids)}&format=json`;
-        const upstream = await fetch(url);
-        if (!upstream.ok) {
-            return res.status(upstream.status).json({ error: `Upstream error: ${upstream.statusText}` });
-        }
-        const data = await upstream.json();
-        res.json(data);
-    } catch (err: any) {
-        res.status(502).json({ error: `Failed to fetch ${endpoint.toUpperCase()}`, detail: err.message });
-    }
-}
-
-app.get('/api/weather/metar', (req, res) => proxyAWC('metar', req, res));
-app.get('/api/weather/taf', (req, res) => proxyAWC('taf', req, res));
-
-// ── Launcher API ─────────────────────────────────────────────────────────────
-const launcherService = new LauncherService();
-
-app.get('/api/launcher/settings', (req, res) => {
-    res.json(launcherService.getSettings());
-});
-
-app.post('/api/launcher/settings', (req, res) => {
-    const settings = req.body;
-    if (Array.isArray(settings)) {
-        launcherService.updateSettings(settings);
-        res.json({ success: true });
-    } else {
-        res.status(400).json({ error: 'Invalid settings format' });
-    }
-});
-
-app.post('/api/launcher/launch', async (req, res) => {
-    const { appId } = req.body;
-    if (!appId) return res.status(400).json({ error: 'appId is required' });
-    try {
-        await launcherService.launchApp(appId);
-        res.json({ success: true });
-    } catch (err: any) {
-        console.error('Launch error:', err);
-        res.status(500).json({ error: err.message || 'Failed to launch app' });
-    }
-});
-
-import { VPilotInstallerService } from './services/vpilotInstaller';
+app.use('/api/weather', weatherRouter);
+app.use('/api/launcher', launcherRouter);
 
 // Initialize services
-VPilotInstallerService.installPlugin();
+try {
+    VPilotInstallerService.installPlugin();
+} catch (e) {
+    console.error('Failed to install vPilot plugin:', e);
+}
 const flightService = new FlightDataService();
 const wsController = new WebSocketController(WS_PORT, flightService);
 

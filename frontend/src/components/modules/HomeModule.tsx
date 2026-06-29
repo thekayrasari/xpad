@@ -3,15 +3,15 @@ import { useUIStore, type ModuleType } from '../../stores/uiStore';
 import { useOFPStore } from '../../stores/ofpStore';
 import { useWeatherStore } from '../../stores/weatherStore';
 import { useSettingsStore } from '../../stores/settingsStore';
-import { Plane, FileText, MessageSquare, Cloud, BookOpen, FileEdit, ClipboardList, Settings, Map as MapIcon, RefreshCw, AlertTriangle, Radar, Download, Navigation, Radio, Rocket } from 'lucide-react';
+import { Plane, FileText, MessageSquare, Cloud, BookOpen, FileEdit, ClipboardList, Settings, Map as MapIcon, RefreshCw, AlertTriangle, Radar, Download, Navigation, Radio, Rocket, type LucideIcon } from 'lucide-react';
 
-const apps: { id: ModuleType; label: string; icon: React.FC<any>; color: string }[] = [
+const apps: { id: ModuleType; label: string; icon: LucideIcon; color: string }[] = [
     { id: 'ofp', label: 'OFP', icon: FileText, color: 'text-[#f97316]' }, // Orange
     { id: 'pdf', label: 'Manuals', icon: BookOpen, color: 'text-[#a855f7]' }, // Purple
     { id: 'radar', label: 'Radar', icon: Radar, color: 'text-[#3b82f6]' }, // Blue
     { id: 'weather', label: 'Weather', icon: Cloud, color: 'text-[#0ea5e9]' }, // Light Blue
-    { id: 'aoc', label: 'Dispatch', icon: MessageSquare, color: 'text-[#f43f5e]' }, // Rose
-    { id: 'dispatch', label: 'Planner', icon: ClipboardList, color: 'text-[#10b981]' }, // Emerald
+    { id: 'aoc', label: 'AOC', icon: MessageSquare, color: 'text-[#f43f5e]' }, // Rose
+    { id: 'simbrief', label: 'SimBrief', icon: ClipboardList, color: 'text-[#10b981]' }, // Emerald
     { id: 'notes', label: 'Notes', icon: FileEdit, color: 'text-[#eab308]' }, // Yellow
     { id: 'fenix', label: 'Aircraft EFB', icon: Plane, color: 'text-[#ef4444]' }, // Red
     { id: 'charts', label: 'Charts', icon: MapIcon, color: 'text-[#ec4899]' }, // Pink
