@@ -24,6 +24,8 @@ export interface OFPData {
     zfw: number;
     tow: number;
     waypoints: Waypoint[];
+    callsign?: string;
+    cruiseFL?: string;
 }
 
 const typeMap: Record<string, WaypointType> = {
@@ -74,6 +76,15 @@ export const useOFPStore = create<OFPStoreState>()(
                     const route = xmlDoc.getElementsByTagName("general")[0]?.getElementsByTagName("route")[0]?.textContent || '';
                     const fuel = parseFloat(xmlDoc.getElementsByTagName("fuel")[0]?.getElementsByTagName("plan_ramp")[0]?.textContent || '0');
                     const aircraft = xmlDoc.getElementsByTagName("aircraft")[0]?.getElementsByTagName("icaocode")[0]?.textContent || '';
+                    const callsign = xmlDoc.getElementsByTagName("atc")[0]?.getElementsByTagName("callsign")[0]?.textContent || xmlDoc.getElementsByTagName("general")[0]?.getElementsByTagName("atc_callsign")[0]?.textContent || '';
+                    const initialAlt = xmlDoc.getElementsByTagName("general")[0]?.getElementsByTagName("initial_altitude")[0]?.textContent || '';
+                    
+                    let cruiseFL = initialAlt;
+                    if (initialAlt && initialAlt.length >= 3 && initialAlt.endsWith('00')) {
+                        cruiseFL = 'FL' + initialAlt.substring(0, initialAlt.length - 2);
+                    } else if (initialAlt && !initialAlt.startsWith('FL') && initialAlt.length === 3) {
+                        cruiseFL = 'FL' + initialAlt;
+                    }
                     
                     // Extract Human-Readable Text OFP
                     let textOFP = xmlDoc.getElementsByTagName("plan_html")[0]?.textContent || '';
@@ -137,7 +148,9 @@ export const useOFPStore = create<OFPStoreState>()(
                             pax: parseInt(paxStr, 10) || 0,
                             zfw: parseFloat(zfwStr) || 0,
                             tow: parseFloat(towStr) || 0,
-                            waypoints: waypoints
+                            waypoints: waypoints,
+                            callsign: callsign,
+                            cruiseFL: cruiseFL
                         },
                         isLoading: false,
                         error: null
