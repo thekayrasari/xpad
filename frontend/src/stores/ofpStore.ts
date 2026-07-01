@@ -40,7 +40,7 @@ interface OFPStoreState {
 
 export const useOFPStore = create<OFPStoreState>()(
     persist(
-        (set) => ({
+        (set, get) => ({
             data: null,
             isLoading: false,
             error: null,
@@ -112,14 +112,18 @@ export const useOFPStore = create<OFPStoreState>()(
                     const zfwStr = weightsNode?.getElementsByTagName("est_zfw")[0]?.textContent || '0';
                     const towStr = weightsNode?.getElementsByTagName("est_tow")[0]?.textContent || '0';
 
-                    // Dispatch Final Loadsheet to AOC
-                    useAOCStore.getState().addEvent({
-                        id: crypto.randomUUID(),
-                        timestamp: Date.now(),
-                        title: 'Final Loadsheet',
-                        message: `FLIGHT: ${origin}-${dest}\nAIRCRAFT: ${aircraft}\nPAX: ${paxStr}\n\nZFW: ${zfwStr} lbs/kgs\nBLOCK FUEL: ${fuel} lbs/kgs\nTOW: ${towStr} lbs/kgs\n\nSTATUS: FINAL\nCLEAR TO START, DISPATCH OUT.`,
-                        type: 'info'
-                    });
+                    const isDuplicate = get().data?.textOFP === textOFP;
+
+                    // Dispatch Final Loadsheet to AOC if not duplicate
+                    if (!isDuplicate) {
+                        useAOCStore.getState().addEvent({
+                            id: crypto.randomUUID(),
+                            timestamp: Date.now(),
+                            title: 'Final Loadsheet',
+                            message: `FLIGHT: ${origin}-${dest}\nAIRCRAFT: ${aircraft}\nPAX: ${paxStr}\n\nZFW: ${zfwStr} lbs/kgs\nBLOCK FUEL: ${fuel} lbs/kgs\nTOW: ${towStr} lbs/kgs\n\nSTATUS: FINAL\nCLEAR TO START, DISPATCH OUT.`,
+                            type: 'info'
+                        });
+                    }
 
                     set({
                         data: {

@@ -21,8 +21,12 @@
 
 @layer base {
   body {
-    @apply text-text-primary subpixel-antialiased min-h-screen font-sans transition-colors duration-300;
+    @apply text-text-primary subpixel-antialiased min-h-screen font-sans transition-colors duration-300 select-none;
     background-color: var(--color-dark-bg);
+  }
+  
+  input, textarea, [contenteditable="true"] {
+    @apply select-text;
   }
 }
 

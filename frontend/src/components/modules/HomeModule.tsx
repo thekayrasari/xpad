@@ -3,7 +3,7 @@ import { useUIStore, type ModuleType } from '../../stores/uiStore';
 import { useOFPStore } from '../../stores/ofpStore';
 import { useWeatherStore } from '../../stores/weatherStore';
 import { useSettingsStore } from '../../stores/settingsStore';
-import { Plane, FileText, MessageSquare, Cloud, BookOpen, FileEdit, ClipboardList, Settings, Map as MapIcon, RefreshCw, AlertTriangle, Radar, Download, Navigation, Radio, Rocket, type LucideIcon } from 'lucide-react';
+import { Plane, FileText, MessageSquare, Cloud, BookOpen, FileEdit, ClipboardList, Settings, Map as MapIcon, RefreshCw, AlertTriangle, Radar, Download, Navigation, Radio, Rocket, Check, type LucideIcon } from 'lucide-react';
 
 const apps: { id: ModuleType; label: string; icon: LucideIcon; color: string }[] = [
     { id: 'ofp', label: 'OFP', icon: FileText, color: 'text-[#f97316]' }, // Orange
@@ -28,6 +28,8 @@ export const HomeModule: React.FC = () => {
     const { fetchWeather } = useWeatherStore();
     const { simbriefId } = useSettingsStore();
     const [localError, setLocalError] = useState<string | null>(null);
+    const [isCooldown, setIsCooldown] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
 
     const handlePullFlightData = async () => {
         if (!simbriefId) {
@@ -35,20 +37,35 @@ export const HomeModule: React.FC = () => {
             return;
         }
         setLocalError(null);
+        setShowSuccess(false);
+        setIsCooldown(true);
+        
+        const startTime = Date.now();
         await fetchOFP(simbriefId);
         
-        const latestData = useOFPStore.getState().data;
-        if (latestData) {
+        const { data: latestData, error } = useOFPStore.getState();
+        if (latestData && !error) {
             if (latestData.departure) fetchWeather(latestData.departure);
             if (latestData.arrival) fetchWeather(latestData.arrival);
             if (latestData.alternate) fetchWeather(latestData.alternate);
         }
+        
+        const elapsedTime = Date.now() - startTime;
+        const remainingCooldown = Math.max(0, 500 - elapsedTime);
+        
+        setTimeout(() => {
+            setIsCooldown(false);
+            if (!error) {
+                setShowSuccess(true);
+                setTimeout(() => setShowSuccess(false), 3000);
+            }
+        }, remainingCooldown);
     };
 
     return (
-        <div className="w-full h-full flex flex-col relative animate-page-enter">
+        <div className="w-full h-full flex flex-col relative animate-page-enter overflow-y-auto">
             {/* Massive Centered Header */}
-            <div className="flex flex-col items-center justify-end flex-1 pb-12 pt-8">
+            <div className="flex flex-col items-center justify-end flex-1 pb-12 pt-8 min-h-min">
                 <div className="flex items-baseline gap-[2px] mb-4">
                     <span className="font-sans font-light text-[5rem] md:text-[7rem] tracking-widest text-text-primary leading-none">x</span>
                     <span className="font-sans font-bold text-[5rem] md:text-[7rem] tracking-widest text-text-primary leading-none">Pad</span>
@@ -57,11 +74,11 @@ export const HomeModule: React.FC = () => {
                 <div className="flex flex-col items-center">
                     <button 
                         onClick={handlePullFlightData}
-                        disabled={isOfpLoading}
-                        className="glass-button flex items-center gap-3 px-8 py-3.5 rounded-[1.25rem] text-sm font-bold uppercase text-accent-blue hover:text-accent-blue/80 transition-all active:scale-95 disabled:opacity-50 shadow-2xl border border-white/[0.05]"
+                        disabled={isOfpLoading || isCooldown}
+                        className={`glass-button flex items-center gap-3 px-8 py-3.5 rounded-[1.25rem] text-sm font-bold uppercase transition-all active:scale-95 shadow-2xl border border-white/[0.05] ${showSuccess ? 'text-accent-green hover:text-accent-green/80' : 'text-accent-blue hover:text-accent-blue/80'} ${(isOfpLoading || isCooldown) ? 'opacity-50' : ''}`}
                     >
-                        <RefreshCw className={`w-4 h-4 ${isOfpLoading ? 'animate-spin' : ''}`} />
-                        {isOfpLoading ? 'Pulling Data...' : 'Pull Flight Data'}
+                        {showSuccess ? <Check className="w-4 h-4" /> : <RefreshCw className={`w-4 h-4 ${(isOfpLoading || isCooldown) ? 'animate-spin' : ''}`} />}
+                        {(isOfpLoading || isCooldown) ? 'Pulling Data...' : showSuccess ? 'Success' : 'Pull Flight Data'}
                     </button>
                     {localError && (
                         <div className="flex items-center gap-2 mt-4 text-accent-red text-xs font-bold uppercase bg-accent-red/10 border border-accent-red/20 px-4 py-2 rounded-lg">
@@ -73,7 +90,7 @@ export const HomeModule: React.FC = () => {
             </div>
 
             {/* Apps Grid */}
-            <div className="flex-[1.5] flex items-start justify-center px-8">
+            <div className="flex-[1.5] flex items-start justify-center px-8 pb-8">
                 <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-8 max-w-5xl mx-auto w-full">
                     {apps.map((app) => {
                         const Icon = app.icon;
@@ -90,7 +107,7 @@ export const HomeModule: React.FC = () => {
                                 }}
                                 className="group flex flex-col items-center gap-3 transition-transform duration-200 active:scale-95"
                             >
-                                <div className="w-20 h-20 rounded-[1.75rem] glass-button flex items-center justify-center">
+                                <div className="w-20 h-20 rounded-[1.75rem] glass-button flex items-center justify-center shrink-0">
                                     <Icon className={`w-10 h-10 ${app.color} transition-colors drop-shadow-md`} strokeWidth={1.5} />
                                 </div>
                                 <span className="text-sm font-medium text-text-primary tracking-wide drop-shadow-md transition-colors">
