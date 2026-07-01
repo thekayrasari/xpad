@@ -18,6 +18,7 @@ const FlightsimtoModule = React.lazy(() => import('./modules/FlightsimtoModule')
 const NattrakModule = React.lazy(() => import('./modules/NattrakModule').then(m => ({ default: m.NattrakModule })));
 const VPilotModule = React.lazy(() => import('./modules/VPilotModule').then(m => ({ default: m.VPilotModule })));
 const LauncherModule = React.lazy(() => import('./modules/LauncherModule').then(m => ({ default: m.LauncherModule })));
+const GSXModule = React.lazy(() => import('./modules/GSXModule').then(m => ({ default: m.GSXModule })));
 
 const MODULE_REGISTRY: Record<string, React.ComponentType<any>> = {
     home: HomeModule,
@@ -36,6 +37,7 @@ const MODULE_REGISTRY: Record<string, React.ComponentType<any>> = {
     nattrak: NattrakModule,
     vpilot: VPilotModule,
     launcher: LauncherModule,
+    gsx: GSXModule,
 };
 
 const Pane: React.FC<{ active: ModuleType }> = ({ active }) => {

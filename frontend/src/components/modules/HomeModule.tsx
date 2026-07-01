@@ -3,7 +3,7 @@ import { useUIStore, type ModuleType } from '../../stores/uiStore';
 import { useOFPStore } from '../../stores/ofpStore';
 import { useWeatherStore } from '../../stores/weatherStore';
 import { useSettingsStore } from '../../stores/settingsStore';
-import { Plane, FileText, MessageSquare, Cloud, BookOpen, FileEdit, ClipboardList, Settings, Map as MapIcon, RefreshCw, AlertTriangle, Radar, Download, Navigation, Radio, Rocket, Check, type LucideIcon } from 'lucide-react';
+import { Plane, FileText, MessageSquare, Cloud, BookOpen, FileEdit, ClipboardList, Settings, Map as MapIcon, RefreshCw, AlertTriangle, Radar, Download, Navigation, Radio, Rocket, Check, Truck, type LucideIcon } from 'lucide-react';
 
 const apps: { id: ModuleType; label: string; icon: LucideIcon; color: string }[] = [
     { id: 'ofp', label: 'OFP', icon: FileText, color: 'text-[#f97316]' }, // Orange
@@ -19,6 +19,7 @@ const apps: { id: ModuleType; label: string; icon: LucideIcon; color: string }[]
     { id: 'nattrak', label: 'NatTrak', icon: Navigation, color: 'text-[#14b8a6]' }, // Teal
     { id: 'vpilot', label: 'vPilot', icon: Radio, color: 'text-[#8b5cf6]' }, // Violet
     { id: 'launcher', label: 'Launcher', icon: Rocket, color: 'text-[#f59e0b]' }, // Amber
+    { id: 'gsx', label: 'GSX', icon: Truck, color: 'text-[#fbbf24]' }, // Amber/Yellow
     { id: 'settings', label: 'Settings', icon: Settings, color: 'text-[#94a3b8]' }, // Slate
 ];
 

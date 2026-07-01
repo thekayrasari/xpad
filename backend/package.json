@@ -1,6 +1,6 @@
 {
   "name": "xpad-backend",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "description": "Backend services for the xPad EFB",
   "main": "index.js",
   "scripts": {

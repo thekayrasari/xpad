@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type ModuleType = 'home' | 'ofp' | 'radar' | 'weather' | 'pdf' | 'aoc' | 'settings' | 'notes' | 'simbrief' | 'fenix' | 'charts' | 'flightsimto' | 'nattrak' | 'fslabs' | 'vpilot' | 'launcher';
+export type ModuleType = 'home' | 'ofp' | 'radar' | 'weather' | 'pdf' | 'aoc' | 'settings' | 'notes' | 'simbrief' | 'fenix' | 'charts' | 'flightsimto' | 'nattrak' | 'fslabs' | 'vpilot' | 'launcher' | 'gsx';
 
 interface UIStoreState {
     activeModule: ModuleType;
