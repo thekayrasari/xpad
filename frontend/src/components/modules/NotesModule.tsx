@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { Pen, Type, RotateCcw, Trash2 } from 'lucide-react';
+import { Pen, Type, RotateCcw, Trash2, Download } from 'lucide-react';
 import { useNotesStore, type Stroke, type Point } from '../../stores/notesStore';
+import { useOFPStore } from '../../stores/ofpStore';
 
 const generateId = () => Date.now().toString(36) + Math.random().toString(36).substring(2);
 
@@ -26,10 +27,25 @@ const TextInput = ({ id, label, placeholder = '', className = '' }: { id: string
 
 export const NotesModule: React.FC = () => {
     const { 
-        textData, setText, 
+        textData, setText, updateTexts,
         strokes, addStroke, undoStroke, clearAll, 
         mode, setMode 
     } = useNotesStore();
+    const { data: ofpData } = useOFPStore();
+
+    const handleAutoFill = () => {
+        if (!ofpData) return;
+        const updates: Record<string, string> = {};
+        if (ofpData.callsign && !textData['hdr_callsign']) updates['hdr_callsign'] = ofpData.callsign;
+        if (ofpData.aircraftType && !textData['hdr_equip']) updates['hdr_equip'] = ofpData.aircraftType;
+        if (ofpData.departure && !textData['hdr_dep']) updates['hdr_dep'] = ofpData.departure;
+        if (ofpData.arrival && !textData['hdr_arr']) updates['hdr_arr'] = ofpData.arrival;
+        if (ofpData.cruiseFL && !textData['crz_fl']) updates['crz_fl'] = ofpData.cruiseFL;
+        
+        if (Object.keys(updates).length > 0) {
+            updateTexts(updates);
+        }
+    };
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -308,6 +324,15 @@ export const NotesModule: React.FC = () => {
                     </button>
                     <button onClick={clearAll} className="p-1.5 px-3 text-accent-red hover:text-accent-red/80 rounded-md transition-all active:scale-95 ml-1" title="Clear All">
                         <Trash2 className="w-4 h-4" />
+                    </button>
+                    <div className="w-px h-5 bg-white/[0.05] mx-2 self-center" />
+                    <button 
+                        onClick={handleAutoFill} 
+                        disabled={!ofpData} 
+                        className={`p-1.5 px-3 flex items-center gap-2 rounded-md transition-all active:scale-95 ml-1 ${ofpData ? 'text-accent-green hover:text-accent-green/80' : 'text-text-secondary/50 cursor-not-allowed'}`} 
+                        title="Auto-Fill from OFP"
+                    >
+                        <Download className="w-4 h-4" /> <span className="text-xs font-bold uppercase hidden md:inline">Auto-Fill</span>
                     </button>
                 </div>
             </div>

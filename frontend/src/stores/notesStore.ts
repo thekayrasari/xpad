@@ -25,6 +25,7 @@ interface NotesState {
 
     // Actions
     setText: (fieldId: string, value: string) => void;
+    updateTexts: (fields: Record<string, string>) => void;
     addStroke: (stroke: Stroke) => void;
     undoStroke: () => void;
     clearDrawing: () => void;
@@ -42,6 +43,10 @@ export const useNotesStore = create<NotesState>()(
 
             setText: (fieldId, value) => set((state) => ({
                 textData: { ...state.textData, [fieldId]: value }
+            })),
+            
+            updateTexts: (fields) => set((state) => ({
+                textData: { ...state.textData, ...fields }
             })),
 
             addStroke: (stroke) => set((state) => ({
