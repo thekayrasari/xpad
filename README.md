@@ -27,13 +27,16 @@
 - **Company Dispatch (AOC):** Simulate airline dispatch communications. Send and receive standard IATA Delay Codes directly through an interactive AOC feed.
 
 ### Documents & Note-taking
-- **Hybrid ATC Notepad:** Keep track of clearances, frequencies, and scratchpad notes. Features a fully-interactive draw mode for quick annotations!
+- **Hybrid ATC Notepad:** Keep track of clearances, frequencies, and scratchpad notes. Features a fully-interactive draw mode for quick annotations, and one-click auto-fill to populate fields directly from your SimBrief OFP!
 - **PDF Manuals:** Upload and seamlessly navigate through your FCOM, QRH, SOPs, and briefing plates with our integrated PDF reader.
 
 ### Embedded Aircraft EFBs
 Connect your favorite high-fidelity aircraft EFBs natively inside xPad using your local network:
 - **Fenix A320/A330 EFB Integration**
 - **FSLabs EFB Integration**
+
+### Ground Operations
+- **GSX Remote Control:** Seamlessly control GSX operations (boarding, catering, pushback) right from the EFB with a fully integrated remote control interface.
 
 ### Integrated Web Tools
 Quickly access essential simulation resources without leaving xPad:
