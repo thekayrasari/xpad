@@ -7,22 +7,22 @@ import { Plane, FileText, MessageSquare, Cloud, BookOpen, FileEdit, ClipboardLis
 
 const apps: { id: ModuleType; label: string; icon: LucideIcon; color: string }[] = [
     { id: 'ofp', label: 'OFP', icon: FileText, color: 'text-[#f97316]' }, // Orange
-    { id: 'pdf', label: 'Manuals', icon: BookOpen, color: 'text-[#a855f7]' }, // Purple
-    { id: 'radar', label: 'Radar', icon: Radar, color: 'text-[#3b82f6]' }, // Blue
-    { id: 'weather', label: 'Weather', icon: Cloud, color: 'text-[#0ea5e9]' }, // Light Blue
-    { id: 'aoc', label: 'AOC', icon: MessageSquare, color: 'text-[#f43f5e]' }, // Rose
     { id: 'simbrief', label: 'SimBrief', icon: ClipboardList, color: 'text-[#10b981]' }, // Emerald
+    { id: 'vpilot', label: 'vPilot', icon: Radio, color: 'text-[#8b5cf6]' }, // Violet
+    { id: 'weather', label: 'Weather', icon: Cloud, color: 'text-[#0ea5e9]' }, // Light Blue
+    { id: 'charts', label: 'Charts', icon: MapIcon, color: 'text-[#ec4899]' }, // Pink
+    { id: 'radar', label: 'Radar', icon: Radar, color: 'text-[#3b82f6]' }, // Blue
+    { id: 'aoc', label: 'AOC', icon: MessageSquare, color: 'text-[#f43f5e]' }, // Rose
     { id: 'notes', label: 'Notes', icon: FileEdit, color: 'text-[#eab308]' }, // Yellow
+    { id: 'calculators', label: 'Calculator', icon: Calculator, color: 'text-[#6ee7b7]' }, // Emerald lighter
+    { id: 'pdf', label: 'Manuals', icon: BookOpen, color: 'text-[#a855f7]' }, // Purple
+    { id: 'gsx', label: 'GSX', icon: Truck, color: 'text-[#fbbf24]' }, // Amber/Yellow
+    { id: 'nattrak', label: 'NatTrak', icon: Navigation, color: 'text-[#14b8a6]' }, // Teal
     { id: 'fenix', label: 'Fenix EFB', icon: Plane, color: 'text-[#ef4444]' }, // Red
     { id: 'fslabs', label: 'FSLabs EFB', icon: Plane, color: 'text-[#3b82f6]' }, // Blue
-    { id: 'charts', label: 'Charts', icon: MapIcon, color: 'text-[#ec4899]' }, // Pink
     { id: 'flightsimto', label: 'Flightsim.to', icon: Download, color: 'text-[#06b6d4]' }, // Cyan
-    { id: 'nattrak', label: 'NatTrak', icon: Navigation, color: 'text-[#14b8a6]' }, // Teal
-    { id: 'vpilot', label: 'vPilot', icon: Radio, color: 'text-[#8b5cf6]' }, // Violet
     { id: 'launcher', label: 'Launcher', icon: Rocket, color: 'text-[#f59e0b]' }, // Amber
-    { id: 'gsx', label: 'GSX', icon: Truck, color: 'text-[#fbbf24]' }, // Amber/Yellow
     { id: 'settings', label: 'Settings', icon: Settings, color: 'text-[#94a3b8]' }, // Slate
-    { id: 'calculators', label: 'Calculator', icon: Calculator, color: 'text-[#6ee7b7]' }, // Emerald lighter
 ];
 
 export const HomeModule: React.FC = () => {
