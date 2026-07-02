@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { useOFPStore } from '../../stores/ofpStore';
 import { useSettingsStore } from '../../stores/settingsStore';
-import { AlertTriangle, FileText, Fuel, Plane } from 'lucide-react';
+import { AlertTriangle, FileText, Fuel, Plane, AlignLeft } from 'lucide-react';
 
 export const OFPModule: React.FC = () => {
     const { data, isLoading, error, fetchOFP } = useOFPStore();
@@ -15,11 +15,27 @@ export const OFPModule: React.FC = () => {
 
 
 
-    // Memoize expensive HTML sanitization — only recomputes when textOFP changes
-    const cleanOFP = useMemo(() => {
-        if (!data?.textOFP) return '';
-        return new DOMParser().parseFromString(data.textOFP, 'text/html').body.textContent ?? '';
+    // Parse raw OFP text into lines
+    const parsedLines = useMemo(() => {
+        if (!data?.textOFP) return [];
+        const text = new DOMParser().parseFromString(data.textOFP, 'text/html').body.textContent ?? '';
+        return text.split('\n');
     }, [data?.textOFP]);
+
+    const ofpContainerRef = useRef<HTMLDivElement>(null);
+
+    const jumpToSection = (keywords: string[]) => {
+        if (!parsedLines.length) return;
+        const index = parsedLines.findIndex(line => 
+            keywords.some(k => line.toUpperCase().includes(k.toUpperCase()))
+        );
+        if (index !== -1) {
+            const el = document.getElementById(`ofp-line-${index}`);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    };
 
 
 
@@ -41,7 +57,28 @@ export const OFPModule: React.FC = () => {
                 </div>
             )}
 
-            {data && (
+            {isLoading && (
+                <div className="flex-1 flex flex-col lg:flex-row gap-5 min-h-0 overflow-hidden opacity-60 animate-pulse">
+                    {/* Left Column: Summary */}
+                    <div className="w-full lg:w-80 shrink-0 flex flex-col gap-4">
+                        <div className="glass-panel p-5 text-center h-[104px] bg-white/[0.02] border-white/[0.05]"></div>
+
+                        {/* Aircraft & Fuel */}
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="glass-panel p-4 h-[76px] bg-white/[0.02] border-white/[0.05]"></div>
+                            <div className="glass-panel p-4 h-[76px] bg-white/[0.02] border-white/[0.05]"></div>
+                        </div>
+
+                        {/* Additional Info */}
+                        <div className="glass-panel p-4 space-y-3 h-[148px] bg-white/[0.02] border-white/[0.05]"></div>
+                    </div>
+
+                    {/* Right Column: Text OFP */}
+                    <div className="flex-1 glass-panel flex flex-col overflow-hidden min-h-0 bg-white/[0.02] border-white/[0.05]"></div>
+                </div>
+            )}
+
+            {data && !isLoading && (
                 <div className="flex-1 flex flex-col lg:flex-row gap-5 min-h-0 overflow-hidden">
                     {/* Left Column: Summary */}
                     <div className="w-full lg:w-80 shrink-0 flex flex-col gap-4">
@@ -92,12 +129,45 @@ export const OFPModule: React.FC = () => {
                     </div>
 
                     {/* Right Column: Text OFP */}
-                    <div className="flex-1 glass-panel flex flex-col overflow-hidden min-h-0">
+                    <div className="flex-1 glass-panel flex flex-col overflow-hidden min-h-0 relative">
                         <div className="p-3 border-b border-white/[0.05] bg-black/20 flex items-center justify-between gap-4 rounded-t-2xl shrink-0">
-                            <h2 className="text-xs font-bold text-text-secondary uppercase tracking-widest">Dispatch Release — Raw Text OFP</h2>
+                            <h2 className="text-xs font-bold text-text-secondary uppercase tracking-widest flex items-center gap-2">
+                                <AlignLeft className="w-4 h-4" /> Dispatch Release — Raw Text OFP
+                            </h2>
                         </div>
-                        <div className="flex-1 overflow-y-auto p-6 pb-8 hide-scrollbar">
-                            <pre className="text-xs font-bold leading-relaxed text-text-secondary whitespace-pre-wrap">{cleanOFP}</pre>
+                        
+                        <div className="flex-1 overflow-y-auto p-6 pb-8 hide-scrollbar relative" ref={ofpContainerRef}>
+                            <div className="font-mono text-sm md:text-base font-medium leading-relaxed text-text-secondary whitespace-pre-wrap mx-auto w-fit max-w-full">
+                                {parsedLines.map((line, i) => (
+                                    <div key={i} id={`ofp-line-${i}`} className="min-h-[1.5em]">{line}</div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Navigation Buttons (Floating Right) */}
+                        <div className="absolute right-4 top-16 grid grid-cols-2 gap-2 z-10 hidden md:grid opacity-40 hover:opacity-100 transition-opacity duration-300 bg-black/60 p-3 rounded-2xl border border-white/[0.05] backdrop-blur-xl shadow-2xl">
+                            {[
+                                { label: 'SUMMARY AND FUEL', keywords: ['OFP', 'DISPATCH', 'PLANNED FUEL'] },
+                                { label: 'ADDITIONAL INFO', keywords: ['ADDITIONAL INFO', 'DISPATCH REMARKS', 'REMARKS'] },
+                                { label: 'ROUTING AND IMPACTS', keywords: ['ROUTING:', 'RTE:'] },
+                                { label: 'RUNWAY ANALYSIS', keywords: ['RUNWAY ANALYSIS', 'TAKE-OFF', 'TAKEOFF'] },
+                                { label: 'TIMES AND WEIGHTS', keywords: ['LOAD/WEIGHTS', 'WEIGHTS'] },
+                                { label: 'AIRPORT WX LIST', keywords: ['WEATHER & NOTAM', 'WX/NOTAM', 'WEATHER'] },
+                                { label: 'FLIGHT LOG', keywords: ['FLIGHT LOG'] },
+                                { label: 'NOTAM', keywords: ['NOTAMS', 'NOTAM'] },
+                                { label: 'WIND INFORMATION', keywords: ['WIND INFORMATION', 'WIND INFO', 'WINDS'] },
+                                { label: 'COMPANY NOTAM', keywords: ['COMPANY NOTAM'] },
+                                { label: 'ATC FLIGHT PLAN', keywords: ['ATC FLIGHT PLAN', 'ATC CLEARANCE'] },
+                                { label: 'WEATHER CHARTS', keywords: ['WEATHER CHARTS', 'CHARTS'] }
+                            ].map(section => (
+                                <button
+                                    key={section.label}
+                                    onClick={() => jumpToSection(section.keywords)}
+                                    className="px-3 py-3 bg-black/40 hover:bg-white/[0.1] border border-white/[0.05] text-text-secondary hover:text-text-primary text-[9px] sm:text-[10px] font-bold uppercase tracking-widest rounded-lg transition-all active:scale-95 text-center w-full min-w-[120px] max-w-[140px] flex items-center justify-center leading-tight"
+                                >
+                                    {section.label}
+                                </button>
+                            ))}
                         </div>
                     </div>
                 </div>

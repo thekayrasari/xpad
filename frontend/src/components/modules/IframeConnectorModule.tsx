@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useUIStore, type ModuleType } from '../../stores/uiStore';
-import { RefreshCw, ExternalLink, Wifi, WifiOff, ShieldAlert, Plane, AlertTriangle, Settings, Check } from 'lucide-react';
+import { RefreshCw, ExternalLink, Wifi, WifiOff, ShieldAlert, Plane, AlertTriangle } from 'lucide-react';
+import { useSettingsStore } from '../../stores/settingsStore';
 
 type ConnectionState = 'idle' | 'detecting' | 'connected' | 'cert_blocked' | 'offline';
 
 interface IframeConnectorModuleProps {
     port: number;
-    storageKey: string;
     productName: string;
     productDescription: string;
     notFoundTitle: string;
@@ -14,13 +13,10 @@ interface IframeConnectorModuleProps {
     certHint: string;
     loadingText: string;
     iframeTitle: string;
-    alternateModule: { id: ModuleType; label: string; storageValue: string };
-    selfModule: { id: ModuleType; label: string; storageValue: string };
 }
 
 export const IframeConnectorModule: React.FC<IframeConnectorModuleProps> = ({
     port,
-    storageKey,
     productName,
     productDescription,
     notFoundTitle,
@@ -28,15 +24,9 @@ export const IframeConnectorModule: React.FC<IframeConnectorModuleProps> = ({
     certHint,
     loadingText,
     iframeTitle,
-    alternateModule,
-    selfModule,
 }) => {
-    const getSavedIp = () => localStorage.getItem(storageKey) || '';
-    const saveIp = (ip: string) => localStorage.setItem(storageKey, ip);
+    const ip = useSettingsStore(s => s.simulatorIp);
 
-    const [ip, setIp] = useState(getSavedIp);
-    const [inputIp, setInputIp] = useState(getSavedIp);
-    const [showSettings, setShowSettings] = useState(!getSavedIp());
     const [connectionState, setConnectionState] = useState<ConnectionState>('idle');
     const [iframeLoaded, setIframeLoaded] = useState(false);
     const iframeLoadedRef = useRef(false);
@@ -70,20 +60,11 @@ export const IframeConnectorModule: React.FC<IframeConnectorModuleProps> = ({
         }
     };
 
-    // Auto-connect on mount if we have a saved IP
+    // Auto-connect on mount or IP change
     useEffect(() => {
         if (ip) setTimeout(() => { void connect(ip); }, 0);
         return () => { if (iframeTimeoutRef.current) clearTimeout(iframeTimeoutRef.current); };
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-    const handleSaveAndConnect = () => {
-        const trimmed = inputIp.trim();
-        if (!trimmed) return;
-        saveIp(trimmed);
-        setIp(trimmed);
-        setShowSettings(false);
-        void connect(trimmed);
-    };
+    }, [ip]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleIframeLoad = () => {
         if (iframeTimeoutRef.current) clearTimeout(iframeTimeoutRef.current);
@@ -97,22 +78,8 @@ export const IframeConnectorModule: React.FC<IframeConnectorModuleProps> = ({
         setConnectionState('cert_blocked');
     };
 
-    const statusColor =
-        connectionState === 'connected' && iframeLoaded ? 'bg-accent-green' :
-        connectionState === 'offline'                   ? 'bg-accent-red' :
-        connectionState === 'cert_blocked'              ? 'bg-accent-orange' :
-        connectionState === 'detecting'                 ? 'bg-accent-blue animate-pulse' :
-        'bg-white/[0.05]';
-
-    const statusLabel =
-        connectionState === 'detecting'                 ? 'Detecting…' :
-        connectionState === 'connected' && iframeLoaded ? 'Connected' :
-        connectionState === 'cert_blocked'              ? 'Cert Required' :
-        connectionState === 'offline'                   ? 'Offline' :
-        ip ? 'Idle' : 'No IP set';
-
     return (
-        <div className="w-full h-full font-sans text-text-primary bg-transparent flex flex-col overflow-hidden">
+        <div className="w-full h-full font-sans text-text-primary bg-transparent flex flex-col overflow-hidden rounded-[1.5rem]">
             {/* Content area */}
             <div className="flex-1 overflow-hidden relative">
                 {/* No IP configured yet */}
@@ -123,14 +90,13 @@ export const IframeConnectorModule: React.FC<IframeConnectorModuleProps> = ({
                         </div>
                         <div>
                             <h2 className="text-xl font-extrabold uppercase tracking-wide text-text-primary mb-2">{productName}</h2>
-                            <p className="text-sm font-bold text-text-secondary leading-relaxed">{productDescription}</p>
+                            <p className="text-sm font-bold text-text-secondary leading-relaxed">
+                                {productDescription}
+                            </p>
                         </div>
-                        <button
-                            onClick={() => setShowSettings(true)}
-                            className="glass-button flex items-center gap-2 px-5 py-2.5 text-xs font-bold uppercase text-accent-purple hover:text-accent-purple/80 transition-all active:scale-95"
-                        >
-                            <Settings className="w-4 h-4" /> Configure IP
-                        </button>
+                        <p className="text-sm font-bold text-accent-blue/80 mt-2">
+                            Please configure your Simulator IP Address in the global Settings app.
+                        </p>
                     </div>
                 )}
 
@@ -169,12 +135,6 @@ export const IframeConnectorModule: React.FC<IframeConnectorModuleProps> = ({
                                 className="flex items-center gap-2 px-6 py-3 rounded-xl bg-accent-blue text-ctp-base font-bold uppercase text-sm hover:bg-accent-blue/90 transition-all"
                             >
                                 <RefreshCw className="w-4 h-4" /> Retry
-                            </button>
-                            <button
-                                onClick={() => setShowSettings(true)}
-                                className="flex items-center gap-2 px-6 py-3 rounded-xl border border-white/[0.05] text-text-secondary hover:text-text-primary hover:bg-white/[0.05] text-sm font-bold uppercase transition-all"
-                            >
-                                <Settings className="w-4 h-4" /> Change IP
                             </button>
                         </div>
                     </div>
@@ -252,97 +212,6 @@ export const IframeConnectorModule: React.FC<IframeConnectorModuleProps> = ({
                         />
                     </>
                 )}
-            </div>
-
-            {/* IP Settings Panel (collapsible) */}
-            {showSettings && (
-                <div className="shrink-0 mx-6 md:mx-8 mb-4 p-6 glass-panel z-20">
-                    <p className="text-xs font-bold tracking-widest uppercase text-text-secondary mb-3">
-                        Sim PC Connection
-                    </p>
-                    <div className="flex items-center gap-3 max-w-lg">
-                        <div className="flex-1 flex items-center bg-white/[0.03] border border-white/[0.05] rounded-xl overflow-hidden focus-within:border-accent-blue transition-colors">
-                            <span className="pl-4 text-sm font-bold text-text-secondary select-none">http://</span>
-                            <input
-                                type="text"
-                                value={inputIp}
-                                onChange={e => setInputIp(e.target.value)}
-                                onKeyDown={e => e.key === 'Enter' && handleSaveAndConnect()}
-                                placeholder="192.168.1.50"
-                                className="flex-1 bg-transparent px-2 py-3 text-sm font-bold text-text-primary placeholder:text-text-secondary/70 focus:outline-none"
-                                spellCheck={false}
-                            />
-                            <span className="pr-4 text-sm font-bold text-text-secondary select-none">:{port}</span>
-                        </div>
-                        <button
-                            onClick={handleSaveAndConnect}
-                            disabled={!inputIp.trim()}
-                            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-accent-blue text-ctp-base font-bold text-sm uppercase hover:bg-accent-blue/90 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                        >
-                            <Check className="w-4 h-4" />
-                            Connect
-                        </button>
-                    </div>
-                    <p className="text-xs font-bold text-text-secondary/70 mt-3">
-                        Enter the local network IP of the PC running the sim. Your IP is usually something like <span className="text-accent-blue">192.168.x.x</span>.
-                    </p>
-                </div>
-            )}
-
-            {/* Bottom Toolbar */}
-            <div className="shrink-0 flex items-center justify-between px-6 md:px-8 py-4 border-t border-white/[0.05] bg-black/20 z-10">
-                {/* EFB Switcher */}
-                <div className="flex items-center gap-2 bg-black/20 p-1 border border-white/[0.05] rounded-xl">
-                    {[selfModule, alternateModule].map(mod => (
-                        <button
-                            key={mod.id}
-                            onClick={() => {
-                                localStorage.setItem('xpad-last-efb', mod.storageValue);
-                                useUIStore.getState().setActiveModule(mod.id);
-                            }}
-                            className={`p-1.5 px-4 text-xs font-bold uppercase rounded-lg transition-all ${
-                                mod.id === selfModule.id
-                                    ? 'bg-white/[0.1] text-accent-blue shadow-md'
-                                    : 'text-text-secondary hover:text-text-primary'
-                            }`}
-                        >
-                            {mod.label}
-                        </button>
-                    ))}
-                </div>
-
-                <div className="flex items-center gap-2 bg-black/20 p-1 border border-white/[0.05] rounded-xl">
-                    <div className="flex items-center gap-2 px-3">
-                        <span className={`w-2 h-2 rounded-full ${statusColor}`} />
-                        <span className="text-xs font-bold uppercase text-text-secondary">{statusLabel}</span>
-                    </div>
-                    <div className="w-px h-5 bg-white/[0.05] mx-1 self-center" />
-                    {ip && (
-                        <button
-                            onClick={() => connect()}
-                            className="p-1.5 px-3 text-text-secondary hover:text-text-primary rounded-lg transition-all active:scale-95"
-                            title="Retry connection"
-                        >
-                            <RefreshCw className="w-4 h-4" />
-                        </button>
-                    )}
-                    {moduleUrl && (
-                        <button
-                            onClick={() => window.open(moduleUrl, '_blank')}
-                            className="p-1.5 px-3 text-text-secondary hover:text-text-primary rounded-lg transition-all active:scale-95"
-                            title="Open in browser tab"
-                        >
-                            <ExternalLink className="w-4 h-4" />
-                        </button>
-                    )}
-                    <button
-                        onClick={() => setShowSettings(s => !s)}
-                        className={`p-1.5 px-3 rounded-lg transition-all active:scale-95 ${showSettings ? 'bg-white/[0.1] text-accent-blue shadow-md' : 'text-text-secondary hover:text-text-primary'}`}
-                        title="Configure IP"
-                    >
-                        <Settings className="w-4 h-4" />
-                    </button>
-                </div>
             </div>
         </div>
     );

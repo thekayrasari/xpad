@@ -3,7 +3,7 @@ import { useUIStore, type ModuleType } from '../../stores/uiStore';
 import { useOFPStore } from '../../stores/ofpStore';
 import { useWeatherStore } from '../../stores/weatherStore';
 import { useSettingsStore } from '../../stores/settingsStore';
-import { Plane, FileText, MessageSquare, Cloud, BookOpen, FileEdit, ClipboardList, Settings, Map as MapIcon, RefreshCw, AlertTriangle, Radar, Download, Navigation, Radio, Rocket, Check, Truck, type LucideIcon } from 'lucide-react';
+import { Plane, FileText, MessageSquare, Cloud, BookOpen, FileEdit, ClipboardList, Settings, Map as MapIcon, RefreshCw, AlertTriangle, Radar, Download, Navigation, Radio, Rocket, Check, Truck, Calculator, type LucideIcon } from 'lucide-react';
 
 const apps: { id: ModuleType; label: string; icon: LucideIcon; color: string }[] = [
     { id: 'ofp', label: 'OFP', icon: FileText, color: 'text-[#f97316]' }, // Orange
@@ -13,7 +13,8 @@ const apps: { id: ModuleType; label: string; icon: LucideIcon; color: string }[]
     { id: 'aoc', label: 'AOC', icon: MessageSquare, color: 'text-[#f43f5e]' }, // Rose
     { id: 'simbrief', label: 'SimBrief', icon: ClipboardList, color: 'text-[#10b981]' }, // Emerald
     { id: 'notes', label: 'Notes', icon: FileEdit, color: 'text-[#eab308]' }, // Yellow
-    { id: 'fenix', label: 'Aircraft EFB', icon: Plane, color: 'text-[#ef4444]' }, // Red
+    { id: 'fenix', label: 'Fenix EFB', icon: Plane, color: 'text-[#ef4444]' }, // Red
+    { id: 'fslabs', label: 'FSLabs EFB', icon: Plane, color: 'text-[#3b82f6]' }, // Blue
     { id: 'charts', label: 'Charts', icon: MapIcon, color: 'text-[#ec4899]' }, // Pink
     { id: 'flightsimto', label: 'Flightsim.to', icon: Download, color: 'text-[#06b6d4]' }, // Cyan
     { id: 'nattrak', label: 'NatTrak', icon: Navigation, color: 'text-[#14b8a6]' }, // Teal
@@ -21,6 +22,7 @@ const apps: { id: ModuleType; label: string; icon: LucideIcon; color: string }[]
     { id: 'launcher', label: 'Launcher', icon: Rocket, color: 'text-[#f59e0b]' }, // Amber
     { id: 'gsx', label: 'GSX', icon: Truck, color: 'text-[#fbbf24]' }, // Amber/Yellow
     { id: 'settings', label: 'Settings', icon: Settings, color: 'text-[#94a3b8]' }, // Slate
+    { id: 'calculators', label: 'Calculator', icon: Calculator, color: 'text-[#6ee7b7]' }, // Emerald lighter
 ];
 
 export const HomeModule: React.FC = () => {
@@ -98,14 +100,7 @@ export const HomeModule: React.FC = () => {
                         return (
                             <button
                                 key={app.id}
-                                onClick={() => {
-                                    if (app.id === 'fenix') {
-                                        const lastEfb = localStorage.getItem('xpad-last-efb') || 'fenix';
-                                        setActiveModule(lastEfb as ModuleType);
-                                    } else {
-                                        setActiveModule(app.id);
-                                    }
-                                }}
+                                onClick={() => setActiveModule(app.id)}
                                 className="group flex flex-col items-center gap-3 transition-transform duration-200 active:scale-95"
                             >
                                 <div className="w-20 h-20 rounded-[1.75rem] glass-button flex items-center justify-center shrink-0">
