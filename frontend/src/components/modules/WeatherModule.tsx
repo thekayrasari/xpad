@@ -39,7 +39,7 @@ const StationCard: React.FC<{ icao: string; label: string }> = ({ icao, label })
                     <span className="text-xs font-bold uppercase text-text-secondary">{label}</span>
                 </div>
                 <div className="flex items-center gap-3">
-                    {metar && (
+                    {metar && metar.flightCategory !== 'UNKNOWN' && (
                         <div className={`px-3 py-1 rounded-md text-xs font-bold uppercase border ${
                             metar.flightCategory === 'VFR'  ? 'border-accent-green/40 bg-accent-green/10 text-accent-green' :
                             metar.flightCategory === 'MVFR' ? 'border-accent-blue/40 bg-accent-blue/10 text-accent-blue' :
@@ -51,7 +51,7 @@ const StationCard: React.FC<{ icao: string; label: string }> = ({ icao, label })
                         </div>
                     )}
                     <button
-                        onClick={() => fetchWeather(icao)}
+                        onClick={() => fetchWeather(icao, true)}
                         disabled={station?.isLoading}
                         className="glass-button p-2 text-accent-blue hover:text-accent-blue/80 transition-all active:scale-95 disabled:opacity-40"
                     >
@@ -159,17 +159,10 @@ const StationCard: React.FC<{ icao: string; label: string }> = ({ icao, label })
 // ── Main Weather Module ───────────────────────────────────────────────────────
 export const WeatherModule: React.FC = () => {
     const ofpData = useOFPStore(s => s.data);
-    const [customIcao, setCustomIcao] = useState('');
-    const [searchedIcao, setSearchedIcao] = useState<string | null>(null);
 
     const departure = ofpData?.departure ?? '';
     const arrival = ofpData?.arrival ?? '';
     const alternate = ofpData?.alternate ?? '';
-
-    const handleSearch = () => {
-        const trimmed = customIcao.trim().toUpperCase();
-        if (trimmed.length >= 3) setSearchedIcao(trimmed);
-    };
 
     return (
         <div className="w-full h-full flex flex-col font-sans text-text-primary overflow-hidden">
@@ -179,7 +172,7 @@ export const WeatherModule: React.FC = () => {
                     <div className="flex flex-col items-center justify-center text-center text-text-secondary gap-3 py-20">
                         <Cloud className="w-16 h-16 opacity-20" />
                         <p className="text-lg font-bold uppercase">No active flight plan</p>
-                        <p className="text-sm max-w-sm font-bold">Load an OFP in the OFP module to automatically fetch departure and destination weather, or search an ICAO below.</p>
+                        <p className="text-sm max-w-sm font-bold">Load an OFP in the OFP module to automatically fetch departure, destination, and alternate weather.</p>
                     </div>
                 )}
 
@@ -187,31 +180,6 @@ export const WeatherModule: React.FC = () => {
                 {arrival && <StationCard icao={arrival} label="Destination" />}
                 {alternate && <StationCard icao={alternate} label="Alternate" />}
 
-                {/* Custom searched station */}
-                {searchedIcao && searchedIcao !== departure && searchedIcao !== arrival && searchedIcao !== alternate && (
-                    <StationCard icao={searchedIcao} label="Custom Search" />
-                )}
-            </div>
-
-            {/* ── Bottom Toolbar ── */}
-            <div className="shrink-0 px-6 md:px-8 py-4 border-t border-white/[0.05] bg-black/20 flex items-center justify-end z-10">
-                <div className="flex gap-2">
-                    <input
-                        type="text"
-                        value={customIcao}
-                        onChange={e => setCustomIcao(e.target.value.toUpperCase())}
-                        onKeyDown={e => e.key === 'Enter' && handleSearch()}
-                        placeholder="ICAO (e.g. EGLL)"
-                        maxLength={4}
-                        className="w-36 bg-black/20 border border-white/[0.1] rounded-md px-3 py-2 text-sm font-bold uppercase text-text-primary placeholder-text-secondary/50 focus:outline-none focus:border-accent-blue focus:ring-1 focus:ring-accent-blue transition-colors"
-                    />
-                    <button
-                        onClick={handleSearch}
-                        className="glass-button flex items-center gap-2 px-5 py-2.5 text-xs font-bold uppercase text-accent-blue hover:text-accent-blue/80 transition-all active:scale-95 shadow-xl border border-white/[0.05]"
-                    >
-                        <Search className="w-4 h-4" /> Fetch
-                    </button>
-                </div>
             </div>
         </div>
     );

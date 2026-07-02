@@ -1,6 +1,5 @@
 import React, { Suspense, useState, useEffect } from 'react';
 import { useUIStore, type ModuleType } from '../stores/uiStore';
-import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from 'react-resizable-panels';
 import { HomeModule } from './modules/HomeModule';
 
 const RadarModule = React.lazy(() => import('./modules/RadarModule').then(m => ({ default: m.RadarModule })));
@@ -19,6 +18,7 @@ const NattrakModule = React.lazy(() => import('./modules/NattrakModule').then(m 
 const VPilotModule = React.lazy(() => import('./modules/VPilotModule').then(m => ({ default: m.VPilotModule })));
 const LauncherModule = React.lazy(() => import('./modules/LauncherModule').then(m => ({ default: m.LauncherModule })));
 const GSXModule = React.lazy(() => import('./modules/GSXModule').then(m => ({ default: m.GSXModule })));
+const CalculatorsModule = React.lazy(() => import('./modules/CalculatorsModule').then(m => ({ default: m.CalculatorsModule })));
 
 const MODULE_REGISTRY: Record<string, React.ComponentType<any>> = {
     home: HomeModule,
@@ -38,6 +38,7 @@ const MODULE_REGISTRY: Record<string, React.ComponentType<any>> = {
     vpilot: VPilotModule,
     launcher: LauncherModule,
     gsx: GSXModule,
+    calculators: CalculatorsModule,
 };
 
 const Pane: React.FC<{ active: ModuleType }> = ({ active }) => {
@@ -68,27 +69,11 @@ const Pane: React.FC<{ active: ModuleType }> = ({ active }) => {
 };
 
 export const ModuleContainer: React.FC = () => {
-    const { activeModule, secondaryModule } = useUIStore();
+    const { activeModule } = useUIStore();
 
     return (
         <div className="flex-1 w-full h-full overflow-hidden relative">
-            {!secondaryModule ? (
-                <Pane active={activeModule} />
-            ) : (
-                <PanelGroup orientation="horizontal">
-                    <Panel defaultSize={50} minSize={20} className="h-full">
-                        <Pane active={activeModule} />
-                    </Panel>
-                    
-                    <PanelResizeHandle className="w-2 hover:bg-white/5 transition-colors cursor-col-resize flex flex-col items-center justify-center z-10 border-x border-white/[0.05]">
-                        <div className="w-0.5 h-8 bg-text-secondary rounded-full opacity-50" />
-                    </PanelResizeHandle>
-                    
-                    <Panel defaultSize={50} minSize={20} className="h-full">
-                        <Pane active={secondaryModule} />
-                    </Panel>
-                </PanelGroup>
-            )}
+            <Pane active={activeModule} />
         </div>
     );
 };

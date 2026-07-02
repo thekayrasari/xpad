@@ -3,16 +3,18 @@ import { Save, AlertTriangle } from 'lucide-react';
 import { useSettingsStore, type ChartsProvider } from '../../stores/settingsStore';
 
 export const SettingsModule: React.FC = () => {
-    const { simbriefId, chartsProvider, setSimbriefId, setChartsProvider, resetSettings } = useSettingsStore();
+    const { simbriefId, chartsProvider, simulatorIp, setSimbriefId, setChartsProvider, setSimulatorIp, resetSettings } = useSettingsStore();
     
     // Local state for inputs before saving
     const [localSimbrief, setLocalSimbrief] = useState(simbriefId);
     const [localChartsProvider, setLocalChartsProvider] = useState<ChartsProvider>(chartsProvider);
+    const [localSimulatorIp, setLocalSimulatorIp] = useState(simulatorIp);
     const [saved, setSaved] = useState(false);
 
     const handleSave = () => {
         setSimbriefId(localSimbrief);
         setChartsProvider(localChartsProvider);
+        setSimulatorIp(localSimulatorIp);
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);
     };
@@ -22,6 +24,7 @@ export const SettingsModule: React.FC = () => {
             resetSettings();
             setLocalSimbrief('');
             setLocalChartsProvider('msfs');
+            setLocalSimulatorIp('127.0.0.1');
             localStorage.clear();
         }
     };
@@ -66,6 +69,22 @@ export const SettingsModule: React.FC = () => {
                         </select>
                         <p className="text-xs text-text-secondary/70">
                             Select which provider opens when you click the Charts app.
+                        </p>
+                    </div>
+
+                    <div className="space-y-2 pt-4 border-t border-white/[0.05]">
+                        <label className="block text-xs font-bold uppercase text-text-secondary">
+                            Simulator IP Address
+                        </label>
+                        <input
+                            type="text"
+                            value={localSimulatorIp}
+                            onChange={(e) => setLocalSimulatorIp(e.target.value)}
+                            placeholder="e.g. 192.168.1.10"
+                            className="w-full bg-dark-bg border border-white/[0.1] rounded-md px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-blue focus:ring-1 focus:ring-accent-blue transition-colors"
+                        />
+                        <p className="text-xs text-text-secondary/70">
+                            Used by GSX, Fenix, and FSLabs to connect to your simulator across the network. Use 127.0.0.1 if running on the same PC.
                         </p>
                     </div>
 

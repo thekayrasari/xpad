@@ -49,13 +49,11 @@ Quickly access essential simulation resources without leaving xPad:
 ### VATSIM & Network Connectivity
 - **vPilot Integration:** Native backend integration with the vPilot desktop client to monitor VATSIM network connection status, current callsign, and active COM frequencies directly inside the EFB.
 
-### Advanced Multitasking
-- **Split-Screen Mode:** Run two modules side-by-side simultaneously. Keep your OFP open while taking notes, or monitor the VATSIM Radar while browsing charts!
 
 ## Tech Stack
 
 Built with a modern and highly-performant stack:
-- **Frontend:** React 19, TypeScript, Vite, Tailwind CSS v4, Zustand, Lucide React, react-resizable-panels
+- **Frontend:** React 19, TypeScript, Vite, Tailwind CSS v4, Zustand, Lucide React
 - **Backend:** Node.js, TypeScript, Express, WebSocket
 - **APIs:** SimBrief API, VATSIM Data API v3, Aviation Weather Center
 

@@ -29,17 +29,15 @@ export const PDFModule: React.FC = () => {
     // ── Empty state ───────────────────────────────────────────────────────────
     if (files.length === 0) {
         return (
-            <div className="w-full h-full p-6 md:p-8 flex flex-col font-sans text-text-primary bg-white/[0.03] border border-white/[0.05] rounded-[1.5rem] overflow-hidden shadow-2xl">
-
-
-                <div
-                    onDragOver={e => { e.preventDefault(); setIsDragging(true); }}
-                    onDragLeave={() => setIsDragging(false)}
-                    onDrop={handleDrop}
-                    className={`flex-1 flex flex-col items-center justify-center border-2 border-dashed rounded-xl transition-colors ${
-                        isDragging ? 'border-accent-purple bg-accent-purple/10' : 'border-white/[0.05] hover:border-ctp-surface2 bg-white/[0.03]'
-                    }`}
-                >
+            <div 
+                className={`w-full h-full p-6 md:p-8 flex flex-col font-sans text-text-primary border rounded-[1.5rem] overflow-hidden shadow-2xl transition-colors ${
+                    isDragging ? 'border-accent-purple bg-accent-purple/10' : 'border-white/[0.05] bg-white/[0.03]'
+                }`}
+                onDragOver={e => { e.preventDefault(); setIsDragging(true); }}
+                onDragLeave={() => setIsDragging(false)}
+                onDrop={handleDrop}
+            >
+                <div className="flex-1 flex flex-col items-center justify-center">
                     <Upload className="w-16 h-16 text-text-secondary/70/50 mb-4" />
                     <p className="text-lg font-bold uppercase text-text-secondary mb-2">Drop PDF files here</p>
                     <p className="text-sm font-bold text-text-secondary/70 mb-6">FCOM, QRH, SOPs — any PDF document</p>

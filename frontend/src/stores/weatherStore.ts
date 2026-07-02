@@ -35,7 +35,7 @@ export interface StationWeather {
 
 interface WeatherStoreState {
     stations: Record<string, StationWeather>;
-    fetchWeather: (icao: string) => Promise<void>;
+    fetchWeather: (icao: string, force?: boolean) => Promise<void>;
     clearStation: (icao: string) => void;
 }
 
@@ -119,12 +119,12 @@ function parseMetar(raw: AWCRaw): MetarData {
 export const useWeatherStore = create<WeatherStoreState>((set, get) => ({
     stations: {},
 
-    fetchWeather: async (icao: string) => {
+    fetchWeather: async (icao: string, force: boolean = false) => {
         const upper = icao.toUpperCase();
 
         // Check cache
         const existing = get().stations[upper];
-        if (existing && !existing.isLoading && Date.now() - existing.fetchedAt < CACHE_MS) {
+        if (!force && existing && !existing.isLoading && Date.now() - existing.fetchedAt < CACHE_MS) {
             return;
         }
 

@@ -59,6 +59,55 @@ export const VPilotModule = () => {
         sendWsMessage('vpilot_tune_radio', { frequency });
     };
 
+    const handleFreqDoubleClick = (freq: string) => {
+        if (!sendWsMessage) return;
+        
+        const controller = useVPilotStore.getState().controllers.find(c => c.frequency === freq);
+        const target = controller ? controller.callsign : freq;
+        const textToSend = `.atis ${target}`;
+        
+        sendWsMessage('vpilot_send_message', {
+            content: textToSend,
+            frequency: com1,
+            isPrivate: false,
+            recipient: ''
+        });
+        
+        useVPilotStore.getState().addMessage({
+            id: Date.now().toString(),
+            sender: 'Me',
+            content: textToSend,
+            frequency: com1,
+            timestamp: Date.now(),
+            isPrivate: false,
+            isSentByMe: true,
+            tab: activeTab
+        });
+    };
+
+    const renderMessageContent = (content: string) => {
+        const freqRegex = /\b1[1-3][0-9]\.[0-9]{2,3}\b/g;
+        const parts = content.split(freqRegex);
+        const matches = content.match(freqRegex);
+
+        if (!matches) return content;
+
+        return parts.map((part, i) => (
+            <span key={i}>
+                {part}
+                {matches[i] && (
+                    <span
+                        onDoubleClick={() => handleFreqDoubleClick(matches[i])}
+                        className="cursor-pointer text-accent-blue font-bold hover:underline hover:text-accent-blue/80 transition-colors"
+                        title="Double-click to fetch ATIS"
+                    >
+                        {matches[i]}
+                    </span>
+                )}
+            </span>
+        ));
+    };
+
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [filteredMessages]);
@@ -118,7 +167,7 @@ export const VPilotModule = () => {
                     </div>
                     
                     {/* Message List */}
-                    <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
+                    <div key={activeTab} className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 animate-page-enter">
                         {filteredMessages.length === 0 ? (
                             <div className="flex-1 flex flex-col items-center justify-center text-text-secondary opacity-50">
                                 <MessageSquare className="w-12 h-12 mb-2" />
@@ -128,8 +177,8 @@ export const VPilotModule = () => {
                             filteredMessages.map(msg => (
                                 <div key={msg.id} className={`flex flex-col ${msg.isSentByMe ? 'items-end' : 'items-start'}`}>
                                     <span className="text-[10px] text-text-secondary mb-1 px-1">{msg.sender} • {new Date(msg.timestamp).toLocaleTimeString()}</span>
-                                    <div className={`px-4 py-2 rounded-2xl max-w-[80%] ${msg.isSentByMe ? 'bg-accent-blue text-white rounded-br-sm' : 'bg-white/[0.08] text-text-primary rounded-bl-sm'}`}>
-                                        {msg.content}
+                                    <div className={`px-4 py-2 rounded-2xl max-w-[80%] whitespace-pre-wrap ${msg.isSentByMe ? 'bg-accent-blue text-white rounded-br-sm' : 'bg-white/[0.08] text-text-primary rounded-bl-sm'}`}>
+                                        {renderMessageContent(msg.content)}
                                     </div>
                                 </div>
                             ))
