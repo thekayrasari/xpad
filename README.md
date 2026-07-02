@@ -5,12 +5,12 @@
 
 ---
 
-**xPad** is a sleek, standalone Electronic Flight Bag (EFB) built to elevate your flight simulation experience. Seamlessly integrating with SimBrief and VATSIM, xPad provides an all-in-one cockpit companion accessible directly from your browser or desktop. Experience unparalleled situational awareness, intuitive flight planning, and seamless dispatch communications in a unified, beautifully designed interface with advanced split-screen multitasking capabilities.
+**xPad** is a sleek, standalone Electronic Flight Bag (EFB) built to elevate your flight simulation experience. Seamlessly integrating with SimBrief and VATSIM, xPad provides an all-in-one cockpit companion accessible directly from your browser or desktop. Experience unparalleled situational awareness, intuitive flight planning, and seamless dispatch communications in a unified, beautifully designed interface.
 
 ## Features
 
 ### Flight Planning & OFP
-- **SimBrief Integration:** Automatically fetch and review your latest Operational Flight Plan using your Pilot ID. Access block fuel, routing, weights, alternates, and interactive waypoint tables.
+- **SimBrief Integration:** Automatically fetch and review your latest Operational Flight Plan using your Pilot ID. Access block fuel, routing, weights, alternates, and interactive waypoint tables. Features a sleek quick-navigation menu for instantly jumping to specific OFP sections.
 - **Advanced Dispatch Form:** A full-featured native flight planner. Generate your flight directly to SimBrief with complete control over parameters such as Aircraft Type, Registration, SELCAL, ETOPS, and more.
 
 ### Live Radar & Traffic
@@ -48,6 +48,9 @@ Quickly access essential simulation resources without leaving xPad:
 
 ### VATSIM & Network Connectivity
 - **vPilot Integration:** Native backend integration with the vPilot desktop client to monitor VATSIM network connection status, current callsign, and active COM frequencies directly inside the EFB.
+
+### Utilities
+- **Aviation Calculators:** Calculate Top of Descent (TOD) distances and Required Vertical Speed based on current altitude and ground speed. Includes handy aviation unit converters for weight, pressure, and temperature.
 
 
 ## Tech Stack
