@@ -1,5 +1,5 @@
 <div align="center">
-<img width="1920" height="1001" alt="xpad" src="https://github.com/user-attachments/assets/2b646215-bebe-43dd-b2c7-38056e54dc5a" />
+<img width="1920" height="997" alt="{BFE3E893-29E7-49D6-9A7B-8213BF36E16C}" src="https://github.com/user-attachments/assets/17032ea6-8702-4959-b8ae-f723005576f7" />
   <p><strong>A Next-Generation Electronic Flight Bag for Flight Simulation Enthusiasts</strong></p>
 </div>
 
