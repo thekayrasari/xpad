@@ -21,7 +21,7 @@ export const WebviewModule: React.FC<WebviewModuleProps> = ({ src, title, icon: 
     };
 
     return (
-        <div className="w-full h-full bg-transparent flex flex-col overflow-hidden relative">
+        <div className="w-full h-full bg-transparent flex flex-col overflow-hidden relative rounded-[1.5rem]">
             {!loaded && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 text-center z-10 bg-transparent">
                     <div className="relative">
@@ -43,7 +43,7 @@ export const WebviewModule: React.FC<WebviewModuleProps> = ({ src, title, icon: 
             <webview
                 src={src}
                 ref={webviewRef}
-                className={`w-full h-full border-0 transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+                className={`w-full h-full border-0 transition-opacity duration-500 rounded-[1.5rem] ${loaded ? 'opacity-100' : 'opacity-0'}`}
                 title={title}
                 allowpopups={true}
             />

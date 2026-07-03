@@ -28,7 +28,7 @@ function createWindow() {
   let retryCount = 0;
 
   const tryLoad = () => {
-    mainWindow.loadURL(BACKEND_URL).catch(() => {
+    mainWindow.loadURL(`${BACKEND_URL}?nocache=${Date.now()}`).catch(() => {
       if (retryCount < MAX_RETRIES) {
         retryCount++;
         setTimeout(tryLoad, 500);

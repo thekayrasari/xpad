@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Rocket, Settings, Check, X, Play, Folder } from 'lucide-react';
+import { Settings, Play } from 'lucide-react';
 import { BACKEND_URL } from '../../config';
 
 interface AppConfig {

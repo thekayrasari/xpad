@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calculator, Plane, ArrowRightLeft, Thermometer, Wind } from 'lucide-react';
+import { ArrowRightLeft, Thermometer, Wind } from 'lucide-react';
 
 export const CalculatorsModule: React.FC = () => {
     // TOD State
@@ -49,7 +49,7 @@ export const CalculatorsModule: React.FC = () => {
                     <div className="glass-panel p-6">
                         <div className="flex items-center justify-between mb-6 border-b border-white/[0.05] pb-4">
                             <h2 className="text-lg font-bold text-accent-blue uppercase tracking-widest flex items-center gap-2">
-                                <Plane className="w-5 h-5" /> Top of Descent
+                                Top of Descent
                             </h2>
                         </div>
                         
@@ -107,7 +107,7 @@ export const CalculatorsModule: React.FC = () => {
                     <div className="glass-panel p-6 flex flex-col gap-6">
                         <div className="flex items-center justify-between border-b border-white/[0.05] pb-4 shrink-0">
                             <h2 className="text-lg font-bold text-accent-green uppercase tracking-widest flex items-center gap-2">
-                                <ArrowRightLeft className="w-5 h-5" /> Unit Converters
+                                Unit Converters
                             </h2>
                         </div>
                         

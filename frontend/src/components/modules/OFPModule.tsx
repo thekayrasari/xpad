@@ -18,17 +18,44 @@ export const OFPModule: React.FC = () => {
     // Parse raw OFP text into lines
     const parsedLines = useMemo(() => {
         if (!data?.textOFP) return [];
-        const text = new DOMParser().parseFromString(data.textOFP, 'text/html').body.textContent ?? '';
-        return text.split('\n');
+        let text = data.textOFP;
+        
+        // If the text comes as HTML (contains <div> or <br>), convert block elements to newlines
+        // before using DOMParser, so that we don't squash lines together.
+        if (text.includes('<div') || text.includes('<br') || text.includes('<p')) {
+            text = text.replace(/<\/(div|p|h[1-6])>/gi, '\n');
+            text = text.replace(/<br\s*\/?>/gi, '\n');
+            text = new DOMParser().parseFromString(text, 'text/html').body.textContent ?? '';
+        } else {
+            // It might have HTML entities like &nbsp; even if it doesn't have divs
+            text = new DOMParser().parseFromString(text, 'text/html').body.textContent ?? text;
+        }
+        
+        return text.split(/\r?\n/);
     }, [data?.textOFP]);
 
     const ofpContainerRef = useRef<HTMLDivElement>(null);
 
     const jumpToSection = (keywords: string[]) => {
         if (!parsedLines.length) return;
-        const index = parsedLines.findIndex(line => 
-            keywords.some(k => line.toUpperCase().includes(k.toUpperCase()))
-        );
+        const index = parsedLines.findIndex(line => {
+            // Strip dashes, equals, asterisks, underscores, brackets, and parens
+            const cleanLine = line.replace(/[-=*_\[\]()]/g, '').replace(/\s+/g, ' ').trim().toUpperCase();
+            if (!cleanLine) return false;
+            
+            return keywords.some(k => {
+                const upperK = k.toUpperCase().replace(/[-=*_\[\]()]/g, '').trim();
+                // Match exact cleaned line
+                if (cleanLine === upperK) return true;
+                // For keywords ending with colon like "ROUTING:"
+                if (upperK.endsWith(':') && cleanLine.startsWith(upperK)) return true;
+                // Generic contains check, but only if the line isn't too long (avoids matching regular text paragraphs)
+                if (cleanLine.includes(upperK) && cleanLine.length < upperK.length + 10) return true;
+                
+                return false;
+            });
+        });
+        
         if (index !== -1) {
             const el = document.getElementById(`ofp-line-${index}`);
             if (el) {
@@ -81,8 +108,8 @@ export const OFPModule: React.FC = () => {
             {data && !isLoading && (
                 <div className="flex-1 flex flex-col lg:flex-row gap-5 min-h-0 overflow-hidden">
                     {/* Left Column: Summary */}
-                    <div className="w-full lg:w-80 shrink-0 flex flex-col gap-4">
-                        <div className="glass-panel p-5 text-center">
+                    <div className="w-full lg:w-80 shrink-0 flex flex-col gap-4 overflow-y-auto hide-scrollbar pb-2">
+                        <div className="glass-panel p-5 text-center shrink-0">
                             <div className="flex items-center justify-center gap-4 mb-3">
                                 <span className="text-4xl font-black text-text-primary tracking-tighter">{data.departure}</span>
                                 <Plane className="w-6 h-6 text-accent-blue opacity-80" />
@@ -92,7 +119,7 @@ export const OFPModule: React.FC = () => {
                         </div>
 
                         {/* Aircraft & Fuel */}
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-2 gap-3 shrink-0">
                             <div className="glass-panel p-4">
                                 <div className="text-xs text-text-secondary font-bold uppercase tracking-widest mb-1 flex items-center gap-2">
                                     <Plane className="w-3.5 h-3.5 text-accent-purple" /> Aircraft
@@ -108,7 +135,7 @@ export const OFPModule: React.FC = () => {
                         </div>
 
                         {/* Additional Info */}
-                        <div className="glass-panel p-4 space-y-3">
+                        <div className="glass-panel p-4 space-y-3 shrink-0">
                             <div className="flex justify-between items-center text-sm font-bold border-b border-white/[0.05] pb-2">
                                 <span className="text-text-secondary">PAX</span>
                                 <span className="text-text-primary">{data.pax || 0}</span>
@@ -124,6 +151,37 @@ export const OFPModule: React.FC = () => {
                             <div className="flex justify-between items-center text-sm font-bold">
                                 <span className="text-text-secondary">Waypoints</span>
                                 <span className="text-text-primary">{data.waypoints.length} Fixes</span>
+                            </div>
+                        </div>
+
+                        {/* Navigation Links */}
+                        <div className="glass-panel p-4 flex flex-col gap-3 shrink-0">
+                            <div className="text-xs text-text-secondary font-bold uppercase tracking-widest flex items-center gap-2">
+                                <AlignLeft className="w-3.5 h-3.5 text-accent-blue" /> Quick Navigation
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                                {[
+                                    { label: 'Summary & Fuel', keywords: ['OFP', 'DISPATCH', 'PLANNED FUEL'] },
+                                    { label: 'Additional Info', keywords: ['ADDITIONAL INFO', 'DISPATCH REMARKS', 'REMARKS'] },
+                                    { label: 'Routing', keywords: ['ROUTING:', 'RTE:'] },
+                                    { label: 'Runway Analysis', keywords: ['RUNWAY ANALYSIS', 'TAKE-OFF', 'TAKEOFF'] },
+                                    { label: 'Times & Weights', keywords: ['TIMES', 'TIMES / WEIGHTS', 'LOAD/WEIGHTS', 'WEIGHTS'] },
+                                    { label: 'Airport WX List', keywords: ['AIRPORT WX LIST', 'WEATHER & NOTAM', 'WX/NOTAM', 'WEATHER', 'WX AND NOTAM'] },
+                                    { label: 'Flight Log', keywords: ['FLIGHT LOG'] },
+                                    { label: 'NOTAMs', keywords: ['NOTAMS', 'NOTAM'] },
+                                    { label: 'Wind Info', keywords: ['WIND INFORMATION', 'WIND INFO', 'WINDS'] },
+                                    { label: 'Company NOTAM', keywords: ['COMPANY NOTAM'] },
+                                    { label: 'ATC Flight Plan', keywords: ['ATC FLIGHT PLAN', 'ATC CLEARANCE', 'FILED FLIGHT PLAN'] },
+                                    { label: 'Weather Charts', keywords: ['WEATHER CHARTS', 'CHARTS', 'SIGWX'] }
+                                ].map(section => (
+                                    <button
+                                        key={section.label}
+                                        onClick={() => jumpToSection(section.keywords)}
+                                        className="px-2 py-2 bg-black/20 hover:bg-white/[0.05] border border-white/[0.05] text-text-secondary hover:text-text-primary text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all active:scale-95 text-center flex items-center justify-center"
+                                    >
+                                        {section.label}
+                                    </button>
+                                ))}
                             </div>
                         </div>
                     </div>
@@ -144,31 +202,6 @@ export const OFPModule: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Navigation Buttons (Floating Right) */}
-                        <div className="absolute right-4 top-16 grid grid-cols-2 gap-2 z-10 hidden md:grid opacity-40 hover:opacity-100 transition-opacity duration-300 bg-black/60 p-3 rounded-2xl border border-white/[0.05] backdrop-blur-xl shadow-2xl">
-                            {[
-                                { label: 'SUMMARY AND FUEL', keywords: ['OFP', 'DISPATCH', 'PLANNED FUEL'] },
-                                { label: 'ADDITIONAL INFO', keywords: ['ADDITIONAL INFO', 'DISPATCH REMARKS', 'REMARKS'] },
-                                { label: 'ROUTING AND IMPACTS', keywords: ['ROUTING:', 'RTE:'] },
-                                { label: 'RUNWAY ANALYSIS', keywords: ['RUNWAY ANALYSIS', 'TAKE-OFF', 'TAKEOFF'] },
-                                { label: 'TIMES AND WEIGHTS', keywords: ['LOAD/WEIGHTS', 'WEIGHTS'] },
-                                { label: 'AIRPORT WX LIST', keywords: ['WEATHER & NOTAM', 'WX/NOTAM', 'WEATHER'] },
-                                { label: 'FLIGHT LOG', keywords: ['FLIGHT LOG'] },
-                                { label: 'NOTAM', keywords: ['NOTAMS', 'NOTAM'] },
-                                { label: 'WIND INFORMATION', keywords: ['WIND INFORMATION', 'WIND INFO', 'WINDS'] },
-                                { label: 'COMPANY NOTAM', keywords: ['COMPANY NOTAM'] },
-                                { label: 'ATC FLIGHT PLAN', keywords: ['ATC FLIGHT PLAN', 'ATC CLEARANCE'] },
-                                { label: 'WEATHER CHARTS', keywords: ['WEATHER CHARTS', 'CHARTS'] }
-                            ].map(section => (
-                                <button
-                                    key={section.label}
-                                    onClick={() => jumpToSection(section.keywords)}
-                                    className="px-3 py-3 bg-black/40 hover:bg-white/[0.1] border border-white/[0.05] text-text-secondary hover:text-text-primary text-[9px] sm:text-[10px] font-bold uppercase tracking-widest rounded-lg transition-all active:scale-95 text-center w-full min-w-[120px] max-w-[140px] flex items-center justify-center leading-tight"
-                                >
-                                    {section.label}
-                                </button>
-                            ))}
-                        </div>
                     </div>
                 </div>
             )}
