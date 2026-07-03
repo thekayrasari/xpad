@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { useAOCStore } from './aocStore';
+import { useNotesStore } from './notesStore';
 
 export type WaypointType = 'apt' | 'vor' | 'ndb' | 'fix' | 'ltlg' | 'unknown';
 
@@ -125,15 +126,20 @@ export const useOFPStore = create<OFPStoreState>()(
 
                     const isDuplicate = get().data?.textOFP === textOFP;
 
-                    // Dispatch Final Loadsheet to AOC if not duplicate
+                    // Always clear old AOC events and dispatch the new loadsheet 
+                    // so the user can recover it if they accidentally deleted it
+                    useAOCStore.getState().clearEvents();
+                    useAOCStore.getState().addEvent({
+                        id: crypto.randomUUID(),
+                        timestamp: Date.now(),
+                        title: 'Final Loadsheet',
+                        message: `FLIGHT: ${origin}-${dest}\nAIRCRAFT: ${aircraft}\nPAX: ${paxStr}\n\nZFW: ${zfwStr} lbs/kgs\nBLOCK FUEL: ${fuel} lbs/kgs\nTOW: ${towStr} lbs/kgs\n\nSTATUS: FINAL\nCLEAR TO START, DISPATCH OUT.`,
+                        type: 'info'
+                    });
+
+                    // Only clear notes if this is actually a NEW flight plan
                     if (!isDuplicate) {
-                        useAOCStore.getState().addEvent({
-                            id: crypto.randomUUID(),
-                            timestamp: Date.now(),
-                            title: 'Final Loadsheet',
-                            message: `FLIGHT: ${origin}-${dest}\nAIRCRAFT: ${aircraft}\nPAX: ${paxStr}\n\nZFW: ${zfwStr} lbs/kgs\nBLOCK FUEL: ${fuel} lbs/kgs\nTOW: ${towStr} lbs/kgs\n\nSTATUS: FINAL\nCLEAR TO START, DISPATCH OUT.`,
-                            type: 'info'
-                        });
+                        useNotesStore.getState().clearAll();
                     }
 
                     set({

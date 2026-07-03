@@ -47,13 +47,11 @@
 
   /* True Glassmorphism: No harsh borders, just subtle inset shadows */
   .glass-panel {
-    @apply bg-white/[0.03] backdrop-blur-xl shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] rounded-2xl ring-1 ring-white/[0.05];
-    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05), 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    @apply bg-white/[0.03] backdrop-blur-xl shadow-none rounded-2xl border border-white/[0.05];
   }
   
   .glass-button {
-    @apply bg-white/[0.04] backdrop-blur-md rounded-xl hover:bg-white/[0.08] transition-all duration-300 ring-1 ring-white/[0.05];
-    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05), 0 4px 16px 0 rgba(0, 0, 0, 0.2);
+    @apply bg-white/[0.04] backdrop-blur-md shadow-none rounded-xl hover:bg-white/[0.08] transition-all duration-300 border border-white/[0.05];
   }
 }
 
@@ -64,6 +62,7 @@
   .hide-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+    overscroll-behavior: none;
   }
   @keyframes page-enter {
     from { opacity: 0; transform: translateY(4px); }

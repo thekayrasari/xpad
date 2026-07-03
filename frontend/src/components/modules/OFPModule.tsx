@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { useOFPStore } from '../../stores/ofpStore';
 import { useSettingsStore } from '../../stores/settingsStore';
-import { AlertTriangle, FileText, Fuel, Plane, AlignLeft } from 'lucide-react';
+import { AlertTriangle, FileText, AlignLeft } from 'lucide-react';
 
 export const OFPModule: React.FC = () => {
     const { data, isLoading, error, fetchOFP } = useOFPStore();
@@ -86,18 +86,9 @@ export const OFPModule: React.FC = () => {
 
             {isLoading && (
                 <div className="flex-1 flex flex-col lg:flex-row gap-5 min-h-0 overflow-hidden opacity-60 animate-pulse">
-                    {/* Left Column: Summary */}
+                    {/* Left Column */}
                     <div className="w-full lg:w-80 shrink-0 flex flex-col gap-4">
-                        <div className="glass-panel p-5 text-center h-[104px] bg-white/[0.02] border-white/[0.05]"></div>
-
-                        {/* Aircraft & Fuel */}
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="glass-panel p-4 h-[76px] bg-white/[0.02] border-white/[0.05]"></div>
-                            <div className="glass-panel p-4 h-[76px] bg-white/[0.02] border-white/[0.05]"></div>
-                        </div>
-
-                        {/* Additional Info */}
-                        <div className="glass-panel p-4 space-y-3 h-[148px] bg-white/[0.02] border-white/[0.05]"></div>
+                        {/* Empty loading state or add a skeleton for navigation links if needed */}
                     </div>
 
                     {/* Right Column: Text OFP */}
@@ -107,71 +98,27 @@ export const OFPModule: React.FC = () => {
 
             {data && !isLoading && (
                 <div className="flex-1 flex flex-col lg:flex-row gap-5 min-h-0 overflow-hidden">
-                    {/* Left Column: Summary */}
+                    {/* Left Column: Navigation Only */}
                     <div className="w-full lg:w-80 shrink-0 flex flex-col gap-4 overflow-y-auto hide-scrollbar pb-2">
-                        <div className="glass-panel p-5 text-center shrink-0">
-                            <div className="flex items-center justify-center gap-4 mb-3">
-                                <span className="text-4xl font-black text-text-primary tracking-tighter">{data.departure}</span>
-                                <Plane className="w-6 h-6 text-accent-blue opacity-80" />
-                                <span className="text-4xl font-black text-text-primary tracking-tighter">{data.arrival}</span>
-                            </div>
-                            {data.alternate && <div className="text-xs font-bold text-text-secondary uppercase tracking-widest bg-black/20 py-1.5 rounded-md inline-block px-4 border border-white/[0.05]">ALTN: <span className="text-accent-orange">{data.alternate}</span></div>}
-                        </div>
-
-                        {/* Aircraft & Fuel */}
-                        <div className="grid grid-cols-2 gap-3 shrink-0">
-                            <div className="glass-panel p-4">
-                                <div className="text-xs text-text-secondary font-bold uppercase tracking-widest mb-1 flex items-center gap-2">
-                                    <Plane className="w-3.5 h-3.5 text-accent-purple" /> Aircraft
-                                </div>
-                                <div className="text-xl font-bold text-text-primary">{data.aircraftType}</div>
-                            </div>
-                            <div className="glass-panel p-4">
-                                <div className="text-xs text-text-secondary font-bold uppercase tracking-widest mb-1 flex items-center gap-2">
-                                    <Fuel className="w-3.5 h-3.5 text-accent-green" /> Block Fuel
-                                </div>
-                                <div className="text-xl font-bold text-text-primary">{data.fuel.toLocaleString()} <span className="text-xs text-text-secondary">LBS</span></div>
-                            </div>
-                        </div>
-
-                        {/* Additional Info */}
-                        <div className="glass-panel p-4 space-y-3 shrink-0">
-                            <div className="flex justify-between items-center text-sm font-bold border-b border-white/[0.05] pb-2">
-                                <span className="text-text-secondary">PAX</span>
-                                <span className="text-text-primary">{data.pax || 0}</span>
-                            </div>
-                            <div className="flex justify-between items-center text-sm font-bold border-b border-white/[0.05] pb-2">
-                                <span className="text-text-secondary">ZFW</span>
-                                <span className="text-text-primary">{(data.zfw || 0).toLocaleString()} <span className="text-xs font-normal text-text-secondary/70">LBS</span></span>
-                            </div>
-                            <div className="flex justify-between items-center text-sm font-bold border-b border-white/[0.05] pb-2">
-                                <span className="text-text-secondary">TOW</span>
-                                <span className="text-text-primary">{(data.tow || 0).toLocaleString()} <span className="text-xs font-normal text-text-secondary/70">LBS</span></span>
-                            </div>
-                            <div className="flex justify-between items-center text-sm font-bold">
-                                <span className="text-text-secondary">Waypoints</span>
-                                <span className="text-text-primary">{data.waypoints.length} Fixes</span>
-                            </div>
-                        </div>
 
                         {/* Navigation Links */}
                         <div className="glass-panel p-4 flex flex-col gap-3 shrink-0">
                             <div className="text-xs text-text-secondary font-bold uppercase tracking-widest flex items-center gap-2">
                                 <AlignLeft className="w-3.5 h-3.5 text-accent-blue" /> Quick Navigation
                             </div>
-                            <div className="grid grid-cols-2 gap-2">
+                            <div className="grid grid-cols-1 gap-2">
                                 {[
                                     { label: 'Summary & Fuel', keywords: ['OFP', 'DISPATCH', 'PLANNED FUEL'] },
-                                    { label: 'Additional Info', keywords: ['ADDITIONAL INFO', 'DISPATCH REMARKS', 'REMARKS'] },
                                     { label: 'Routing', keywords: ['ROUTING:', 'RTE:'] },
-                                    { label: 'Runway Analysis', keywords: ['RUNWAY ANALYSIS', 'TAKE-OFF', 'TAKEOFF'] },
                                     { label: 'Times & Weights', keywords: ['TIMES', 'TIMES / WEIGHTS', 'LOAD/WEIGHTS', 'WEIGHTS'] },
-                                    { label: 'Airport WX List', keywords: ['AIRPORT WX LIST', 'WEATHER & NOTAM', 'WX/NOTAM', 'WEATHER', 'WX AND NOTAM'] },
                                     { label: 'Flight Log', keywords: ['FLIGHT LOG'] },
-                                    { label: 'NOTAMs', keywords: ['NOTAMS', 'NOTAM'] },
                                     { label: 'Wind Info', keywords: ['WIND INFORMATION', 'WIND INFO', 'WINDS'] },
-                                    { label: 'Company NOTAM', keywords: ['COMPANY NOTAM'] },
                                     { label: 'ATC Flight Plan', keywords: ['ATC FLIGHT PLAN', 'ATC CLEARANCE', 'FILED FLIGHT PLAN'] },
+                                    { label: 'Additional Info', keywords: ['ADDITIONAL INFO', 'DISPATCH REMARKS', 'REMARKS'] },
+                                    { label: 'Runway Analysis', keywords: ['RUNWAY ANALYSIS', 'TAKE-OFF', 'TAKEOFF'] },
+                                    { label: 'Airport WX List', keywords: ['AIRPORT WX LIST', 'WEATHER & NOTAM', 'WX/NOTAM', 'WEATHER', 'WX AND NOTAM'] },
+                                    { label: 'NOTAMs', keywords: ['NOTAMS', 'NOTAM'] },
+                                    { label: 'Company NOTAM', keywords: ['COMPANY NOTAM'] },
                                     { label: 'Weather Charts', keywords: ['WEATHER CHARTS', 'CHARTS', 'SIGWX'] }
                                 ].map(section => (
                                     <button
