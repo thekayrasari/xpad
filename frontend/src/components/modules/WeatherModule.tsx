@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useWeatherStore, type FlightCategory } from '../../stores/weatherStore';
 import { useOFPStore } from '../../stores/ofpStore';
-import { Cloud, RefreshCw, AlertTriangle, Wind, Eye, Thermometer, Search } from 'lucide-react';
+import { Cloud, RefreshCw, AlertTriangle, Wind, Eye, Thermometer } from 'lucide-react';
 
 // ── Flight category helpers ───────────────────────────────────────────────────
 const catConfig: Record<FlightCategory, { label: string; color: string; glow: string }> = {

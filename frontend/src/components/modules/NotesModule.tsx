@@ -1,11 +1,5 @@
-import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { Pen, Type, RotateCcw, Trash2, Download } from 'lucide-react';
-import { useNotesStore, type Stroke, type Point } from '../../stores/notesStore';
-import { useOFPStore } from '../../stores/ofpStore';
-
-const generateId = () => Date.now().toString(36) + Math.random().toString(36).substring(2);
-
-
+import React from 'react';
+import { useNotesStore } from '../../stores/notesStore';
 
 // Reusable Input Component moved outside to prevent re-mounting and focus loss
 const TextInput = ({ id, label, placeholder = '', className = '' }: { id: string, label?: string, placeholder?: string, className?: string }) => {

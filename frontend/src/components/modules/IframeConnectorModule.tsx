@@ -206,7 +206,7 @@ export const IframeConnectorModule: React.FC<IframeConnectorModuleProps> = ({
                             src={moduleUrl}
                             onLoad={handleIframeLoad}
                             onError={handleIframeError}
-                            className={`w-full h-full border-0 transition-opacity duration-500 ${iframeLoaded ? 'opacity-100' : 'opacity-0'}`}
+                            className={`w-full h-full border-0 transition-opacity duration-500 rounded-[1.5rem] ${iframeLoaded ? 'opacity-100' : 'opacity-0'}`}
                             title={iframeTitle}
                             allow="fullscreen"
                         />

@@ -62,15 +62,31 @@ Built with a modern and highly-performant stack:
 
 ## Getting Started
 
-Ready to take flight? Start the development servers locally:
+Ready to take flight? You can run xPad as a standalone desktop app or in your browser:
 
+### Desktop App (Recommended)
+1. Install dependencies in the root, frontend, and backend folders:
+   ```bash
+   npm install
+   cd frontend && npm install
+   cd ../backend && npm install
+   ```
+2. Start the standalone xPad desktop application:
+   ```bash
+   npm start
+   ```
+3. To build a distributable `.exe` installer:
+   ```bash
+   npm run dist
+   ```
+
+### Development Servers (Browser)
 1. **Backend Server:**
    ```bash
    cd backend
    npm install
    npm run dev
    ```
-
 2. **Frontend App:**
    ```bash
    cd frontend

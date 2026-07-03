@@ -89,7 +89,7 @@ export const PDFModule: React.FC = () => {
                     <iframe 
                         key={f.url}
                         src={`${f.url}#toolbar=1&navpanes=1&view=FitH`}
-                        className={`absolute inset-0 w-full h-full border-none ${activeFileUrl === f.url ? 'block' : 'hidden'}`}
+                        className={`absolute inset-0 w-full h-full border-none rounded-b-[1.5rem] ${activeFileUrl === f.url ? 'block' : 'hidden'}`}
                         title={`PDF Viewer - ${f.name}`}
                     />
                 ))}
