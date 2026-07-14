@@ -1,48 +1,16 @@
 import React, { Suspense, useState, useEffect } from 'react';
-import { useUIStore, type ModuleType } from '../stores/uiStore';
-import { HomeModule } from './modules/HomeModule';
+import { useUIStore } from '../stores/uiStore';
+import { MODULES } from '../config/modules';
+import { useModulesStore } from '../stores/modulesStore';
+import { ExternalFrameModule } from './modules/ExternalFrameModule';
 
-const RadarModule = React.lazy(() => import('./modules/RadarModule').then(m => ({ default: m.RadarModule })));
-const SettingsModule = React.lazy(() => import('./modules/SettingsModule').then(m => ({ default: m.SettingsModule })));
-const OFPModule = React.lazy(() => import('./modules/OFPModule').then(m => ({ default: m.OFPModule })));
-const WeatherModule = React.lazy(() => import('./modules/WeatherModule').then(m => ({ default: m.WeatherModule })));
-const PDFModule = React.lazy(() => import('./modules/PDFModule').then(m => ({ default: m.PDFModule })));
-const AOCModule = React.lazy(() => import('./modules/AOCModule').then(m => ({ default: m.AOCModule })));
-const NotesModule = React.lazy(() => import('./modules/NotesModule').then(m => ({ default: m.NotesModule })));
-const SimbriefModule = React.lazy(() => import('./modules/SimbriefModule').then(m => ({ default: m.SimbriefModule })));
-const FenixModule = React.lazy(() => import('./modules/FenixModule').then(m => ({ default: m.FenixModule })));
-const FslabsModule = React.lazy(() => import('./modules/FslabsModule').then(m => ({ default: m.FslabsModule })));
-const ChartsModule = React.lazy(() => import('./modules/ChartsModule').then(m => ({ default: m.ChartsModule })));
-const FlightsimtoModule = React.lazy(() => import('./modules/FlightsimtoModule').then(m => ({ default: m.FlightsimtoModule })));
-const NattrakModule = React.lazy(() => import('./modules/NattrakModule').then(m => ({ default: m.NattrakModule })));
-const VPilotModule = React.lazy(() => import('./modules/VPilotModule').then(m => ({ default: m.VPilotModule })));
-const LauncherModule = React.lazy(() => import('./modules/LauncherModule').then(m => ({ default: m.LauncherModule })));
-const GSXModule = React.lazy(() => import('./modules/GSXModule').then(m => ({ default: m.GSXModule })));
-const CalculatorsModule = React.lazy(() => import('./modules/CalculatorsModule').then(m => ({ default: m.CalculatorsModule })));
+const MODULE_REGISTRY = Object.fromEntries(
+    MODULES.map(m => [m.id, m.component])
+) as Record<string, React.ComponentType<any>>;
 
-const MODULE_REGISTRY: Record<string, React.ComponentType<any>> = {
-    home: HomeModule,
-    radar: RadarModule,
-    settings: SettingsModule,
-    ofp: OFPModule,
-    weather: WeatherModule,
-    pdf: PDFModule,
-    aoc: AOCModule,
-    notes: NotesModule,
-    simbrief: SimbriefModule,
-    fenix: FenixModule,
-    fslabs: FslabsModule,
-    charts: ChartsModule,
-    flightsimto: FlightsimtoModule,
-    nattrak: NattrakModule,
-    vpilot: VPilotModule,
-    launcher: LauncherModule,
-    gsx: GSXModule,
-    calculators: CalculatorsModule,
-};
-
-const Pane: React.FC<{ active: ModuleType }> = ({ active }) => {
+const Pane: React.FC<{ active: string }> = ({ active }) => {
     const [mounted, setMounted] = useState<Set<string>>(new Set([active]));
+    const dynamicModules = useModulesStore(s => s.modules);
     
     useEffect(() => {
         setMounted(prev => {
@@ -54,15 +22,28 @@ const Pane: React.FC<{ active: ModuleType }> = ({ active }) => {
     }, [active]);
 
     return (
-        <Suspense fallback={<div className="flex items-center justify-center h-full text-text-secondary">Loading module...</div>}>
+        <Suspense fallback={<div className="flex items-center justify-center h-full text-text-primary">Loading...</div>}>
             {Array.from(mounted).map(moduleId => {
-                const Component = MODULE_REGISTRY[moduleId];
-                if (!Component) return null;
-                return (
-                    <div key={moduleId} className={`w-full h-full animate-page-enter ${active === moduleId ? 'block' : 'hidden'}`}>
-                        <Component />
-                    </div>
-                );
+                const StaticComponent = MODULE_REGISTRY[moduleId];
+                
+                if (StaticComponent) {
+                    return (
+                        <div key={moduleId} className={`w-full h-full ${active === moduleId ? 'block' : 'hidden'}`}>
+                            <StaticComponent />
+                        </div>
+                    );
+                }
+
+                const dynModule = dynamicModules.find(m => m.id === moduleId);
+                if (dynModule) {
+                    return (
+                        <div key={moduleId} className={`w-full h-full ${active === moduleId ? 'block' : 'hidden'}`}>
+                            <ExternalFrameModule config={dynModule} />
+                        </div>
+                    );
+                }
+
+                return null;
             })}
         </Suspense>
     );

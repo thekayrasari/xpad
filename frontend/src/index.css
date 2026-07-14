@@ -4,71 +4,285 @@
 @theme {
   --font-sans: 'Outfit', sans-serif;
 
-  --color-dark-bg: #0f1219;
-  
-  --color-accent-teal: #2dd4bf;
-  --color-accent-tealHover: #14b8a6;
-  --color-accent-blue: #3b82f6;
-  --color-accent-green: #10b981;
-  --color-accent-red: #ef4444;
-  --color-accent-orange: #f59e0b;
-  --color-accent-purple: #a855f7;
-  --color-accent-pink: #ec4899;
+  /* ── MSFS 2024 Dark Palette ──────── */
+  --color-dark-bg:          #161A22;   /* Deepest dark (Sidebar, inputs) */
+  --color-nav-bg:           #161A22;   /* Sidebar */
+  --color-nav-hover:        #262B34;   /* Inactive sidebar buttons */
+  --color-pane-bg:          #202530;   /* Main content area */
+  --color-border-dark:      #2C3340;   /* Borders, dividers */
+    
+  --color-text-primary:     #F3F4F6;   /* White/Off-white */
+  --color-text-secondary:   #8B95A5;   /* Subdued text */
+    
+  --color-accent-blue:      #00B8FF;   /* MSFS Active Cyan */
+  --color-accent-blue-hover:#33C8FF;
+  --color-accent-teal:      #2dd4bf;
+  --color-accent-green:     #10b981;
+  --color-accent-red:       #ef4444;
+  --color-accent-orange:    #C68241;   /* MSFS Orange Accent */
+  --color-accent-purple:    #A979F5;   /* MSFS Purple Accent */
+}
 
-  --color-text-primary: #f8fafc;
-  --color-text-secondary: #94a3b8;
+/* ─────────────────────────────────────────
+   BASE
+───────────────────────────────────────── */
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 @layer base {
   body {
-    @apply text-text-primary subpixel-antialiased min-h-screen font-sans transition-colors duration-300 select-none;
+    @apply text-text-primary subpixel-antialiased font-sans select-none;
     background-color: var(--color-dark-bg);
   }
-  
+
   input, textarea, [contenteditable="true"] {
     @apply select-text;
   }
 }
 
+/* ─────────────────────────────────────────
+   COMPONENTS — the single design system
+   Use xp-* classes across ALL modules.
+   Do NOT add ad-hoc bg-white/[0.03] etc.
+───────────────────────────────────────── */
 @layer components {
+
+  /* ── Scrollbar ──────────────────────── */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
-  }
-  ::-webkit-scrollbar-track {
-    @apply bg-transparent;
+    background: var(--color-nav-bg);
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-white/10 rounded;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-white/20;
+    background: var(--color-border-dark);
+    border: 1px solid var(--color-accent-blue);
   }
 
-  /* True Glassmorphism: No harsh borders, just subtle inset shadows */
-  .glass-panel {
-    @apply bg-white/[0.03] backdrop-blur-xl shadow-none rounded-2xl border border-white/[0.05];
+
+
+  /* ── Panels / Cards ─────────────────── */
+  .xp-panel {
+    background-color: var(--color-pane-bg);
+    border: 1px solid var(--color-border-dark);
   }
-  
-  .glass-button {
-    @apply bg-white/[0.04] backdrop-blur-md shadow-none rounded-xl hover:bg-white/[0.08] transition-all duration-300 border border-white/[0.05];
+
+  .xp-panel-header {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-border-dark);
+    background-color: var(--color-nav-bg);
+  }
+
+  /* ── Stat card (VPilot, Weather) ────── */
+  .xp-stat-card {
+    background-color: var(--color-pane-bg);
+    border: 1px solid var(--color-border-dark);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    gap: 0.25rem;
+  }
+
+  /* ── Inputs ─────────────────────────── */
+  .xp-input {
+    width: 100%;
+    background-color: var(--color-nav-bg);
+    border: 1px solid var(--color-border-dark);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+  }
+  .xp-input::placeholder {
+    color: var(--color-text-secondary);
+    opacity: 0.7;
+  }
+  .xp-input:focus {
+    border-color: var(--color-accent-blue);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-accent-blue) 25%, transparent);
+  }
+
+
+  /* Button active scaling removed */
+
+  /* ── xp-btn — neutral / secondary ──── */
+  .xp-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid var(--color-border-dark);
+    background-color: var(--color-nav-hover);
+    color: var(--color-text-secondary);
+    transition: all 0.15s;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .xp-btn:hover { color: var(--color-text-primary); background-color: var(--color-nav-hover); }
+  /* Button active scaling removed */
+
+  /* ── xp-btn-primary — blue affirmative */
+  .xp-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid var(--color-accent-blue);
+    background-color: var(--color-accent-blue);
+    color: var(--color-dark-bg);
+    transition: all 0.15s;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .xp-btn-primary:hover { background-color: var(--color-accent-blue-hover); border-color: var(--color-accent-blue-hover); }
+  /* Button active scaling removed */
+  .xp-btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  /* ── xp-btn-ghost — icon / toolbar ─── */
+  .xp-btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid transparent;
+    background-color: transparent;
+    color: var(--color-text-secondary);
+    transition: all 0.15s;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .xp-btn-ghost:hover {
+    background-color: var(--color-nav-hover);
+    border-color: var(--color-border-dark);
+    color: var(--color-text-primary);
+  }
+  /* Button active scaling removed */
+
+
+
+  /* ── Typography helpers ──────────────── */
+  .xp-label {
+    display: block;
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-secondary);
+    margin-bottom: 0.25rem;
+  }
+
+  .xp-section-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-primary);
+  }
+
+  .xp-overline {
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-secondary);
+  }
+
+  /* ── Tabs ────────────────────────────── */
+  .xp-tab {
+    padding: 0.625rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-secondary);
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s;
+    cursor: pointer;
+    user-select: none;
+  }
+  .xp-tab:hover { color: var(--color-text-primary); }
+
+  .xp-tab-active {
+    color: var(--color-accent-blue);
+    border-bottom: 2px solid var(--color-accent-blue);
+  }
+
+  /* ── Badges ──────────────────────────── */
+  .xp-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem 0.5rem;
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid var(--color-border-dark);
+    background-color: var(--color-nav-bg);
+    color: var(--color-text-secondary);
+  }
+
+  /* ── Toolbar strip ───────────────────── */
+  .xp-toolbar {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    border-top: 1px solid var(--color-border-dark);
+    background-color: var(--color-nav-bg);
+  }
+
+  /* ── Empty state ─────────────────────── */
+  .xp-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--color-text-secondary);
+    opacity: 0.6;
   }
 }
 
+/* ─────────────────────────────────────────
+   UTILITIES
+───────────────────────────────────────── */
 @layer utilities {
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
   .hide-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
     overscroll-behavior: none;
   }
-  @keyframes page-enter {
-    from { opacity: 0; transform: translateY(4px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .animate-page-enter {
-    animation: page-enter 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
+
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { scrollbar-width: none; }
 }

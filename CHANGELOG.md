@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0] - 2026-07-14
+
+### Added
+- **Dynamic Module Registry:** Added a backend-driven declarative registry for external integrations (VATSIM Radar, VATSIM NatTrak, SimBrief, Charts, FlightSim.to, Fenix EFB, FSLabs EFB, and GSX Remote) powered by local config at `%APPDATA%/xPad/modules-settings.json`.
+- **Backend Settings Storage:** Migrated SimBrief Pilot ID, Simulator IP, and Charts Provider from the browser's volatile LocalStorage to unified persistent storage on disk at `%APPDATA%/xPad/settings.json`.
+- **Aviation Nomenclature:** Renamed modules to official airline/network terminology (e.g. Radar ➔ VATSIM Radar, NatTrak ➔ VATSIM NatTrak, Notes ➔ Scratchpad).
+
+### Changed
+- **AOC Module Layout:** Refactored the Airline Operations Control module UI to comply with the "No Top Bars" rule. Replaced toolbars with a floating absolute-action button and blur-backdrop overlay modal.
+- **vPilot Service Naming:** Renamed the backend installer file to `vpilotPluginService.ts` and updated class naming to improve service uniformity.
+
 ## [1.3.0] - 2026-07-03
 
 ### Added

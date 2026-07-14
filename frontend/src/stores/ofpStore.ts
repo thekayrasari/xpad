@@ -27,6 +27,8 @@ export interface OFPData {
     waypoints: Waypoint[];
     callsign?: string;
     cruiseFL?: string;
+    costIndex?: string;
+    tobt?: string;
 }
 
 const typeMap: Record<string, WaypointType> = {
@@ -86,6 +88,12 @@ export const useOFPStore = create<OFPStoreState>()(
                     } else if (initialAlt && !initialAlt.startsWith('FL') && initialAlt.length === 3) {
                         cruiseFL = 'FL' + initialAlt;
                     }
+
+                    const costIndex = xmlDoc.getElementsByTagName("costindex")[0]?.textContent || 'N/A';
+                    const estOutUtc = xmlDoc.getElementsByTagName("est_out_utc")[0]?.textContent;
+                    const schedOutUtc = xmlDoc.getElementsByTagName("sched_out_utc")[0]?.textContent;
+                    const rawTobt = estOutUtc || schedOutUtc || '';
+                    const tobtVal = rawTobt ? (rawTobt.toUpperCase().endsWith('Z') ? rawTobt.toUpperCase() : `${rawTobt.toUpperCase()}Z`) : 'N/A';
                     
                     // Extract Human-Readable Text OFP
                     let textOFP = xmlDoc.getElementsByTagName("plan_html")[0]?.textContent || '';
@@ -156,7 +164,9 @@ export const useOFPStore = create<OFPStoreState>()(
                             tow: parseFloat(towStr) || 0,
                             waypoints: waypoints,
                             callsign: callsign,
-                            cruiseFL: cruiseFL
+                            cruiseFL: cruiseFL,
+                            costIndex: costIndex,
+                            tobt: tobtVal
                         },
                         isLoading: false,
                         error: null

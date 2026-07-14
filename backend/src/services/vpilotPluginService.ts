@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-export class VPilotInstallerService {
+export class VPilotPluginService {
     public static async installPlugin() {
         console.log("Checking for vPilot installation to auto-install plugin...");
         

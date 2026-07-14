@@ -1,40 +1,56 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { RefreshCw, ExternalLink, WifiOff, ShieldAlert, Plane, AlertTriangle } from 'lucide-react';
 import { useSettingsStore } from '../../stores/settingsStore';
+import type { ExternalModuleConfig } from '../../stores/modulesStore';
 
 type ConnectionState = 'idle' | 'detecting' | 'connected' | 'cert_blocked' | 'offline';
 
-interface IframeConnectorModuleProps {
-    port: number;
-    productName: string;
-    productDescription: string;
-    notFoundTitle: string;
-    notFoundHint: string;
-    certHint: string;
-    loadingText: string;
-    iframeTitle: string;
+interface ExternalFrameModuleProps {
+    config: ExternalModuleConfig;
 }
 
-export const IframeConnectorModule: React.FC<IframeConnectorModuleProps> = ({
-    port,
-    productName,
-    productDescription,
-    notFoundTitle,
-    notFoundHint,
-    certHint,
-    iframeTitle,
-}) => {
-    const ip = useSettingsStore(s => s.simulatorIp);
+const CHARTS_PROVIDER_URLS: Record<string, string> = {
+    msfs: 'https://planner.flightsimulator.com/',
+    navigraph: 'https://charts.navigraph.com/',
+    chartfox: 'https://chartfox.org/',
+};
 
+export const ExternalFrameModule: React.FC<ExternalFrameModuleProps> = ({ config }) => {
+    const { type, id, port, productName, productDescription, notFoundTitle, notFoundHint, certHint } = config;
+    
+    // Settings store values
+    const ip = useSettingsStore(s => s.simulatorIp);
+    const chartsProvider = useSettingsStore(s => s.chartsProvider);
+
+    // ── Webview rendering state ──
+    const [webviewLoaded, setWebviewLoaded] = useState(false);
+    const webviewAttachedRef = useRef(false);
+
+    // ── Iframe connection states ──
     const [connectionState, setConnectionState] = useState<ConnectionState>('idle');
     const [iframeLoaded, setIframeLoaded] = useState(false);
     const iframeLoadedRef = useRef(false);
     const iframeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const moduleUrl = ip ? `http://${ip}:${port}` : '';
+    // Resolve target URL
+    let moduleUrl = config.src || '';
+    if (type === 'iframe' && port) {
+        moduleUrl = ip ? `http://${ip}:${port}` : '';
+    } else if (id === 'charts') {
+        moduleUrl = CHARTS_PROVIDER_URLS[chartsProvider] || CHARTS_PROVIDER_URLS.msfs;
+    }
 
+    // ── Webview ref hook ──
+    const webviewRef = (node: any) => {
+        if (node && !webviewAttachedRef.current) {
+            webviewAttachedRef.current = true;
+            node.addEventListener('dom-ready', () => setWebviewLoaded(true));
+        }
+    };
+
+    // ── Iframe connector methods ──
     const connect = async (targetIp = ip) => {
-        if (!targetIp) return;
+        if (type !== 'iframe' || !targetIp || !port) return;
         setConnectionState('detecting');
         setIframeLoaded(false);
         iframeLoadedRef.current = false;
@@ -59,11 +75,23 @@ export const IframeConnectorModule: React.FC<IframeConnectorModuleProps> = ({
         }
     };
 
-    // Auto-connect on mount or IP change
+    // Auto-connect iframe on mount or IP change
     useEffect(() => {
-        if (ip) setTimeout(() => { void connect(ip); }, 0);
-        return () => { if (iframeTimeoutRef.current) clearTimeout(iframeTimeoutRef.current); };
-    }, [ip]); // eslint-disable-line react-hooks/exhaustive-deps
+        if (type === 'iframe' && ip) {
+            setTimeout(() => { void connect(ip); }, 0);
+        }
+        return () => {
+            if (iframeTimeoutRef.current) clearTimeout(iframeTimeoutRef.current);
+        };
+    }, [ip, type, port]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Reset webview loaded state when URL changes (e.g. Charts provider changes)
+    useEffect(() => {
+        if (type === 'webview') {
+            setWebviewLoaded(false);
+            webviewAttachedRef.current = false;
+        }
+    }, [moduleUrl, type]);
 
     const handleIframeLoad = () => {
         if (iframeTimeoutRef.current) clearTimeout(iframeTimeoutRef.current);
@@ -77,17 +105,43 @@ export const IframeConnectorModule: React.FC<IframeConnectorModuleProps> = ({
         setConnectionState('cert_blocked');
     };
 
+    // ── Render Webview ──
+    if (type === 'webview') {
+        return (
+            <div className="w-full h-full bg-transparent flex flex-col overflow-hidden relative">
+                {!webviewLoaded && (
+                    <div className="absolute inset-0 flex items-center justify-center z-10 bg-transparent text-text-primary">
+                        {config.loadingText || 'Loading...'}
+                    </div>
+                )}
+                {/* @ts-ignore - React doesn't natively include webview definitions */}
+                <webview
+                    src={moduleUrl}
+                    ref={webviewRef}
+                    className={`w-full h-full border-0 ${webviewLoaded ? 'opacity-100' : 'opacity-0'}`}
+                    title={config.label}
+                    allowpopups={true}
+                />
+            </div>
+        );
+    }
+
+    // ── Render Local Iframe Connector ──
     return (
         <div className="w-full h-full font-sans text-text-primary bg-transparent flex flex-col overflow-hidden">
             <div className="flex-1 overflow-hidden relative">
-
+                
                 {/* No IP configured yet */}
                 {!ip && connectionState === 'idle' && (
                     <div className="xp-empty h-full max-w-md mx-auto px-8">
                         <Plane className="w-12 h-12 text-accent-blue mb-4" />
                         <div className="text-center">
-                            <h2 className="text-xl font-extrabold uppercase tracking-wide text-text-primary mb-2">{productName}</h2>
-                            <p className="text-sm font-medium text-text-secondary leading-relaxed">{productDescription}</p>
+                            <h2 className="text-xl font-extrabold uppercase tracking-wide text-text-primary mb-2">
+                                {productName || config.label}
+                            </h2>
+                            <p className="text-sm font-medium text-text-secondary leading-relaxed">
+                                {productDescription || 'Make sure your simulator IP is set correctly in Settings.'}
+                            </p>
                         </div>
                         <p className="text-sm font-bold text-accent-blue/80">
                             Please configure your Simulator IP Address in the global Settings app.
@@ -98,7 +152,7 @@ export const IframeConnectorModule: React.FC<IframeConnectorModuleProps> = ({
                 {/* Detecting */}
                 {connectionState === 'detecting' && (
                     <div className="xp-empty h-full text-text-primary">
-                        Loading...
+                        {config.loadingText || 'Loading...'}
                     </div>
                 )}
 
@@ -107,10 +161,12 @@ export const IframeConnectorModule: React.FC<IframeConnectorModuleProps> = ({
                     <div className="xp-empty h-full max-w-md mx-auto px-8">
                         <WifiOff className="w-12 h-12 text-accent-blue mb-4" />
                         <div className="text-center">
-                            <h2 className="text-xl font-extrabold uppercase tracking-wide text-text-primary mb-2">{notFoundTitle}</h2>
+                            <h2 className="text-xl font-extrabold uppercase tracking-wide text-text-primary mb-2">
+                                {notFoundTitle || `${config.label} Not Found`}
+                            </h2>
                             <p className="text-sm font-medium text-text-secondary leading-relaxed">
                                 Could not reach <span className="text-accent-blue">{moduleUrl}</span>.
-                                <br />{notFoundHint}
+                                <br />{notFoundHint || 'Ensure the service is running and accessible.'}
                             </p>
                         </div>
                         <button onClick={() => connect()} className="xp-btn-primary">
@@ -127,7 +183,9 @@ export const IframeConnectorModule: React.FC<IframeConnectorModuleProps> = ({
                             <h2 className="text-xl font-extrabold uppercase tracking-wide text-text-primary mb-2">
                                 Certificate Trust Required
                             </h2>
-                            <p className="text-sm font-medium text-text-secondary leading-relaxed">{certHint}</p>
+                            <p className="text-sm font-medium text-text-secondary leading-relaxed">
+                                {certHint || 'The connection might be blocked by a self-signed certificate.'}
+                            </p>
                         </div>
 
                         <div className="w-full xp-panel p-5 text-left space-y-3">
@@ -172,7 +230,7 @@ export const IframeConnectorModule: React.FC<IframeConnectorModuleProps> = ({
                     <>
                         {!iframeLoaded && (
                             <div className="absolute inset-0 xp-empty z-10 text-text-primary">
-                                Loading...
+                                {config.loadingText || 'Loading...'}
                             </div>
                         )}
                         <iframe
@@ -180,7 +238,7 @@ export const IframeConnectorModule: React.FC<IframeConnectorModuleProps> = ({
                             onLoad={handleIframeLoad}
                             onError={handleIframeError}
                             className={`w-full h-full border-0 ${iframeLoaded ? 'opacity-100' : 'opacity-0'}`}
-                            title={iframeTitle}
+                            title={config.label}
                             allow="fullscreen"
                         />
                     </>

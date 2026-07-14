@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Play } from 'lucide-react';
+import { Settings, AppWindow } from 'lucide-react';
 import { BACKEND_URL } from '../../config';
 
 interface AppConfig {
@@ -69,22 +69,32 @@ export const LauncherModule: React.FC = () => {
         }
     };
 
-    if (loading) return <div className="p-8 text-text-secondary">Loading launcher...</div>;
-    if (error) return <div className="p-8 text-accent-red">Error: {error}</div>;
+    if (loading) return (
+        <div className="xp-empty h-full text-text-primary">
+            Loading...
+        </div>
+    );
+
+    if (error) return (
+        <div className="xp-empty h-full">
+            <span className="text-sm font-bold text-accent-red">Error: {error}</span>
+        </div>
+    );
 
     return (
-        <div className="w-full h-full flex flex-col font-sans text-text-primary bg-transparent overflow-hidden animate-fade-in relative z-10">
+        <div className="w-full h-full flex flex-col font-sans text-text-primary bg-transparent overflow-hidden">
             <div className="flex-1 overflow-y-auto hide-scrollbar px-6 md:px-8 pt-6 pb-6">
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {settings.map(app => (
                         editingAppId === app.id ? (
-                            <div key={app.id} className="glass-panel p-6 flex flex-col gap-3 relative overflow-hidden">
-                                <label className="text-sm font-semibold text-text-primary">{app.name}</label>
-                                <input 
-                                    type="text" 
+                            /* ── Edit mode ── */
+                            <div key={app.id} className="xp-panel p-5 flex flex-col gap-3">
+                                <label className="xp-label">{app.name}</label>
+                                <input
+                                    type="text"
                                     value={editPath}
                                     onChange={(e) => setEditPath(e.target.value)}
-                                    className="w-full bg-dark-bg/50 border border-white/10 rounded-xl py-2 px-3 text-sm text-text-primary focus:outline-none focus:border-accent-teal transition-colors font-mono"
+                                    className="xp-input font-mono text-xs"
                                     placeholder="C:\Path\To\App.exe"
                                     autoFocus
                                     onKeyDown={e => {
@@ -92,45 +102,46 @@ export const LauncherModule: React.FC = () => {
                                         if (e.key === 'Escape') setEditingAppId(null);
                                     }}
                                 />
-                                <div className="flex gap-2 justify-end mt-2">
-                                    <button 
-                                        onClick={() => setEditingAppId(null)} 
-                                        className="px-3 py-1.5 rounded-lg text-xs font-bold uppercase text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors"
+                                <div className="flex gap-2 justify-end mt-1">
+                                    <button
+                                        onClick={() => setEditingAppId(null)}
+                                        className="xp-btn-ghost"
                                     >
                                         Cancel
                                     </button>
-                                    <button 
-                                        onClick={() => handleSaveSingleApp(app.id)} 
-                                        className="px-3 py-1.5 rounded-lg text-xs font-bold uppercase bg-accent-teal text-black hover:bg-accent-teal/90 transition-colors"
+                                    <button
+                                        onClick={() => handleSaveSingleApp(app.id)}
+                                        className="xp-btn-primary"
                                     >
                                         Save
                                     </button>
                                 </div>
                             </div>
                         ) : (
+                            /* ── Launch mode ── */
                             <button
                                 key={app.id}
                                 onClick={() => launchApp(app.id)}
-                                className="glass-panel p-6 flex flex-col items-center justify-center gap-4 hover:bg-white/5 transition-all group active:scale-95 text-left relative overflow-hidden"
+                                className="xp-panel p-6 flex flex-col items-center justify-center gap-4
+                                           hover:bg-nav-hover transition-colors group relative overflow-hidden"
                             >
-                                <div className="absolute inset-0 bg-gradient-to-br from-accent-teal/0 to-accent-teal/0 group-hover:from-accent-teal/5 group-hover:to-transparent transition-all pointer-events-none" />
-                                
-                                <div 
-                                    onClick={(e) => { 
-                                        e.stopPropagation(); 
-                                        setEditingAppId(app.id); 
-                                        setEditPath(app.path); 
+                                {/* Settings gear — appears on hover */}
+                                <div
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setEditingAppId(app.id);
+                                        setEditPath(app.path);
                                     }}
-                                    className="absolute top-3 right-3 p-1.5 rounded-full text-text-secondary hover:text-text-primary hover:bg-white/10 transition-colors opacity-0 group-hover:opacity-100"
+                                    className="absolute top-2.5 right-2.5 p-1.5 text-text-secondary
+                                               hover:text-text-primary hover:bg-nav-hover transition-colors
+                                               opacity-0 group-hover:opacity-100"
                                     title="Edit Path"
                                 >
                                     <Settings className="w-4 h-4" />
                                 </div>
 
-                                <div className="w-16 h-16 rounded-2xl bg-dark-bg/50 border border-white/5 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                                    <Play className="w-8 h-8 text-accent-teal drop-shadow-md" fill="currentColor" />
-                                </div>
-                                <span className="font-semibold text-text-primary text-center">{app.name}</span>
+                                <AppWindow className="w-10 h-10 text-text-secondary group-hover:text-accent-blue transition-colors" />
+                                <span className="font-bold text-text-primary text-sm text-center">{app.name}</span>
                             </button>
                         )
                     ))}

@@ -1,57 +1,170 @@
-# xPad Frontend Design Language Guide
+# xPad Design Language Guide
 
-This guide documents the core design language, styling conventions, and patterns used across the xPad EFB frontend. Keep these conventions in mind when adding new modules or modifying existing ones to maintain a premium, cohesive look.
+This is the **single source of truth** for all UI styling in the xPad frontend.
+Every module MUST use the classes documented here. Do NOT invent ad-hoc Tailwind values.
 
-## Core Aesthetics
-The app uses a modern **Glassmorphism** dark mode aesthetic.
-- **Backgrounds**: Transparent, semi-translucent layers over a dark global background.
-- **Borders**: Thin, subtle white borders to define edges without clutter.
-- **Depth**: Subtle shadows (`drop-shadow-md`, `shadow-2xl`) and blur effects to create layering.
+---
 
-## Tailored Utility Classes
-We rely heavily on Tailwind CSS. Use these specific utilities to match the design system:
+## Core Aesthetic
 
-### 1. Panels & Cards (Glassmorphism)
-To create standard modules, cards, or floating elements:
-- **Background**: `bg-white/[0.03]`
-- **Border**: `border border-white/[0.05]`
-- **Hover States**: `hover:bg-white/[0.08]` (for interactive cards)
-- **Border Radius**: Use rounded corners like `rounded-xl`, `rounded-[1.5rem]`, or `rounded-[1.75rem]` for larger panels.
+**Solid Dark Mode** — professional, aviation-grade.
+- No glassmorphism, no blur effects, no translucent backgrounds.
+- Crisp borders, solid fills, tight corners (`rounded-md` / `rounded-lg`).
+- Palette inspired by Navigraph — deep navy + slate + blue accent.
 
-### 2. Typography
-- **Primary Text**: `text-text-primary`
-- **Secondary Text (descriptions/subtitles)**: `text-text-secondary`
-- **Labels / Headers**: Small, bold, spaced-out uppercase letters. 
-  - Pattern: `text-[10px] font-bold tracking-widest uppercase text-text-secondary`
-- **Weight**: Lean heavily into `font-bold` for readability in a dark flight simulator environment.
+---
 
-### 3. Interactive Elements (Buttons)
-Buttons should feel tactile and responsive.
-- **Animations**: `transition-all duration-200`
-- **Click effect**: `active:scale-95` (makes the button slightly shrink when clicked)
-- **Base Class**: Use `glass-button` (if defined in your global CSS) or recreate it using the Glassmorphism classes above.
+## Design Token Reference (from `index.css` `@theme`)
 
-### 4. Accent Colors & Icons
-We map distinct accent colors to specific modules/actions using Tailwind custom colors.
-- **Available Colors**: `accent-blue`, `accent-green`, `accent-purple`, `accent-orange`, `accent-red`, `accent-teal`.
-- **Icons**: Use the `lucide-react` library. Ensure icons are consistently sized (e.g., `w-7 h-7` inside large buttons, `w-4 h-4` for inline text).
+| Token | Value | Use |
+|---|---|---|
+| `dark-bg` | `#1a2435` | Root page background |
+| `nav-bg` | `#16202e` | Sidebar, panel headers, input fills |
+| `nav-hover` | `#243044` | Hover backgrounds |
+| `pane-bg` | `#1e2d40` | Card / panel body background |
+| `border-dark` | `#2a3a52` | All borders |
+| `accent-blue` | `#287bcc` | Primary CTA, active state, links |
+| `accent-teal` | `#2dd4bf` | Launcher, connectors |
+| `accent-green` | `#10b981` | Success, VFR status |
+| `accent-red` | `#ef4444` | Errors, warnings, IFR |
+| `accent-orange` | `#f59e0b` | Delays, cert warnings |
+| `accent-purple` | `#a855f7` | PDF module, LIFR |
+| `text-primary` | `#f0f4f8` | Body text |
+| `text-secondary` | `#8a9ab0` | Labels, placeholders, descriptions |
 
-### 5. Loading States
-For new modules that take time to load (like webviews or fetching data), use this standard pulsing icon pattern:
-```tsx
-<div className="relative">
-    {/* Inner static icon container */}
-    <div className="w-16 h-16 rounded-xl bg-accent-[COLOR]/10 border border-accent-[COLOR]/20 flex items-center justify-center">
-        <LucideIcon className="w-7 h-7 text-accent-[COLOR]" />
-    </div>
-    {/* Outer pinging border */}
-    <div className="absolute inset-0 rounded-xl border-2 border-accent-[COLOR]/30 animate-ping" />
+---
+
+## Component Class Reference
+
+### Panels & Cards
+
+```html
+<!-- Standard content card -->
+<div class="xp-panel"> ... </div>
+
+<!-- Panel header strip (always sits at top of xp-panel) -->
+<div class="xp-panel-header"> ... </div>
+```
+
+`xp-panel` = `bg-pane-bg border border-border-dark rounded-lg`  
+`xp-panel-header` = `flex items-center px-4 py-3 border-b border-border-dark bg-nav-bg rounded-t-lg`
+
+---
+
+### Inputs
+
+**All** `<input>`, `<select>`, `<textarea>` elements must use:
+
+```html
+<input class="xp-input" ... />
+<select class="xp-select xp-input" ... />
+<textarea class="xp-input resize-none" ... />
+```
+
+`xp-input` = solid `bg-nav-bg`, `border-border-dark`, `rounded-md`, `focus:border-accent-blue focus:ring-accent-blue/40`
+
+---
+
+### Buttons
+
+| Class | Use |
+|---|---|
+| `xp-btn` | Generic neutral action |
+| `xp-btn-primary` | Save, Send, Confirm — blue |
+| `xp-btn-danger` | Destructive actions — red tint |
+| `xp-btn-ghost` | Icon buttons, toolbar tools, secondary |
+| `xp-btn-orange` | Delay transmit, warning CTAs |
+| `xp-btn-purple` | PDF browse |
+
+All share the same base shape: `rounded-md text-xs font-bold uppercase tracking-wide active:scale-95 transition-all`.
+
+---
+
+### Typography Helpers
+
+```html
+<label class="xp-label">Field Label</label>
+<span class="xp-overline">STAT HEADER</span>
+<h3 class="xp-section-title">Section Name</h3>
+```
+
+---
+
+### Tabs
+
+```html
+<button class="xp-tab">Tab Name</button>
+<button class="xp-tab xp-tab-active">Active Tab</button>
+```
+
+---
+
+### Badges / Pills
+
+```html
+<span class="xp-badge">VFR</span>
+<!-- Override color inline for accent variants -->
+<span class="xp-badge text-accent-green border-accent-green/30 bg-accent-green/10">VFR</span>
+```
+
+---
+
+### Toolbars
+
+```html
+<!-- Bottom action strip -->
+<div class="xp-toolbar justify-end rounded-b-lg">
+    <button class="xp-btn-primary">...</button>
 </div>
 ```
-*(Replace `[COLOR]` with the module's designated accent color, e.g., `blue`, `green`, `purple`).*
 
-## Module Structure
-When creating a new module component (e.g., `MyNewModule.tsx`):
-1. **Container**: Make it consume all available space using `w-full h-full flex flex-col overflow-hidden relative`.
-2. **Transparent Base**: The module container itself should usually have `bg-transparent`.
-3. **Animations**: The `ModuleContainer` handles the `animate-page-enter` transition, so you do not need to add it to the inner module itself unless nesting views.
+---
+
+### Empty States
+
+```html
+<div class="xp-empty h-full">
+    <IconName class="w-16 h-16" />
+    <p class="text-lg font-bold">No data yet</p>
+    <p class="text-sm">Descriptive hint text.</p>
+</div>
+```
+
+---
+
+### Stat Cards (VPilot, Weather…)
+
+```html
+<div class="xp-stat-card flex-1">
+    <span class="xp-overline">COM 1</span>
+    <span class="text-2xl font-bold text-accent-blue">118.700</span>
+</div>
+```
+
+---
+
+## Module Container Rules
+
+1. Root element: `w-full h-full flex flex-col font-sans text-text-primary bg-transparent overflow-hidden`
+2. Scrollable area: `flex-1 overflow-y-auto hide-scrollbar px-6 md:px-8 pt-4 pb-6`
+3. Inner panels: use `xp-panel` — never raw `bg-white/[0.03]` etc.
+
+---
+
+## Icons
+
+Use `lucide-react` exclusively. Size: `w-4 h-4` (inline), `w-5 h-5` (standalone), `w-16 h-16` (empty state).
+
+---
+
+## What NOT to use
+
+| ❌ Old class | ✅ Replacement |
+|---|---|
+| `glass-panel` | `xp-panel` |
+| `glass-button` | `xp-btn-ghost` |
+| `bg-white/[0.03]` | `bg-pane-bg` or `bg-nav-bg` |
+| `border-white/[0.05]` | `border-border-dark` |
+| `rounded-xl`, `rounded-2xl`, `rounded-[1.5rem]` | `rounded-md` or `rounded-lg` |
+| `bg-black/20` | `bg-nav-bg` |
+| `text-[10px] font-bold tracking-widest uppercase` | `xp-overline` or `xp-label` |

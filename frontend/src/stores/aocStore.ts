@@ -14,6 +14,7 @@ interface AOCStoreState {
     unreadCount: number;
     addEvent: (event: AOCEvent) => void;
     markAllRead: () => void;
+    deleteEvent: (id: string) => void;
     clearEvents: () => void;
 }
 
@@ -29,6 +30,10 @@ export const useAOCStore = create<AOCStoreState>()(
             })),
             
             markAllRead: () => set({ unreadCount: 0 }),
+            
+            deleteEvent: (id) => set((state) => ({
+                events: state.events.filter(e => e.id !== id)
+            })),
             
             clearEvents: () => set({ events: [], unreadCount: 0 })
         }),

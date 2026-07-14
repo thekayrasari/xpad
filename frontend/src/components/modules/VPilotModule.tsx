@@ -7,16 +7,14 @@ export const VPilotModule = () => {
     const [inputText, setInputText] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    const filteredMessages = messages.filter(m => {
-        return m.tab === activeTab;
-    });
+    const filteredMessages = messages.filter(m => m.tab === activeTab);
 
     const handleSend = () => {
         if (!inputText.trim() || !sendWsMessage) return;
-        
+
         let freq = com1;
         if (activeTab === 'UNICOM') freq = '122.800';
-        
+
         let textToSend = inputText;
         let isPriv = activeTab !== 'ATC' && activeTab !== 'UNICOM';
         let recipient = isPriv ? activeTab : '';
@@ -31,26 +29,26 @@ export const VPilotModule = () => {
                 setActiveTab(recipient);
             }
         }
-        
+
         sendWsMessage('vpilot_send_message', {
             content: textToSend,
             frequency: freq,
             isPrivate: isPriv,
             recipient: recipient
         });
-        
+
         // Optimistically add message
         useVPilotStore.getState().addMessage({
             id: Date.now().toString(),
             sender: 'Me',
-            content: textToSend, // No need for "To recipient:" anymore since it's in its own tab
+            content: textToSend,
             frequency: freq,
             timestamp: Date.now(),
             isPrivate: isPriv,
             isSentByMe: true,
             tab: isPriv ? recipient : activeTab
         });
-        
+
         setInputText('');
     };
 
@@ -61,18 +59,18 @@ export const VPilotModule = () => {
 
     const handleFreqDoubleClick = (freq: string) => {
         if (!sendWsMessage) return;
-        
+
         const controller = useVPilotStore.getState().controllers.find(c => c.frequency === freq);
         const target = controller ? controller.callsign : freq;
         const textToSend = `.atis ${target}`;
-        
+
         sendWsMessage('vpilot_send_message', {
             content: textToSend,
             frequency: com1,
             isPrivate: false,
             recipient: ''
         });
-        
+
         useVPilotStore.getState().addMessage({
             id: Date.now().toString(),
             sender: 'Me',
@@ -115,20 +113,20 @@ export const VPilotModule = () => {
     return (
         <div className="w-full h-full flex flex-col gap-4 p-4 text-text-primary">
             {/* Header / Radio Panel */}
-            <div className="flex gap-4">
-                <div className="flex-1 bg-white/[0.03] border border-white/[0.05] rounded-xl p-4 flex flex-col items-center justify-center">
-                    <span className="text-[10px] font-bold tracking-widest uppercase text-text-secondary mb-1">COM 1</span>
+            <div className="flex gap-4 shrink-0">
+                <div className="xp-stat-card flex-1">
+                    <span className="xp-overline">COM 1</span>
                     <span className="text-2xl font-bold text-accent-blue">{com1}</span>
                 </div>
-                <div className="flex-1 bg-white/[0.03] border border-white/[0.05] rounded-xl p-4 flex flex-col items-center justify-center">
-                    <span className="text-[10px] font-bold tracking-widest uppercase text-text-secondary mb-1">COM 2</span>
+                <div className="xp-stat-card flex-1">
+                    <span className="xp-overline">COM 2</span>
                     <span className="text-2xl font-bold text-text-secondary">{com2}</span>
                 </div>
-                <div className="flex-1 bg-white/[0.03] border border-white/[0.05] rounded-xl p-4 flex flex-col items-center justify-center">
-                    <span className="text-[10px] font-bold tracking-widest uppercase text-text-secondary mb-1">Network</span>
+                <div className="xp-stat-card flex-1">
+                    <span className="xp-overline">Network</span>
                     <div className="flex items-center gap-2 mt-1">
-                        <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-accent-green' : 'bg-accent-red animate-pulse'}`} />
-                        <span className="font-bold">{isConnected ? 'ONLINE' : 'OFFLINE'}</span>
+                        <div className={`w-2.5 h-2.5 ${isConnected ? 'bg-accent-green' : 'bg-accent-red'}`} />
+                        <span className="font-bold text-sm">{isConnected ? 'ONLINE' : 'OFFLINE'}</span>
                     </div>
                 </div>
             </div>
@@ -136,48 +134,59 @@ export const VPilotModule = () => {
             {/* Main Content */}
             <div className="flex-1 flex gap-4 min-h-0">
                 {/* Chat Interface */}
-                <div className="flex-1 flex flex-col bg-white/[0.03] border border-white/[0.05] rounded-[1.5rem] overflow-hidden">
-                    {/* Tabs */}
-                    <div className="flex border-b border-white/[0.05] overflow-x-auto no-scrollbar">
+                <div className="flex-1 flex flex-col xp-panel overflow-hidden">
+                    {/* Tab Bar */}
+                    <div className="flex border-b border-border-dark overflow-x-auto no-scrollbar bg-nav-bg">
                         {['ATC'].map(tab => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`flex-1 py-3 px-6 text-sm font-bold transition-all duration-200 min-w-max ${activeTab === tab ? 'bg-white/[0.08] text-white' : 'text-text-secondary hover:bg-white/[0.04]'}`}
+                                className={`px-6 py-2.5 text-xs font-bold uppercase tracking-wide transition-colors min-w-max
+                                    ${activeTab === tab ? 'xp-tab xp-tab-active' : 'xp-tab'}`}
                             >
                                 {tab}
                             </button>
                         ))}
                         {pmTabs.map(tab => (
-                            <div key={tab} className={`flex items-center flex-1 min-w-max transition-all duration-200 ${activeTab === tab ? 'bg-white/[0.08] text-white' : 'text-text-secondary hover:bg-white/[0.04]'}`}>
+                            <div
+                                key={tab}
+                                className={`flex items-center min-w-max transition-colors
+                                    ${activeTab === tab ? 'xp-tab xp-tab-active' : 'xp-tab'}`}
+                            >
                                 <button
                                     onClick={() => setActiveTab(tab)}
-                                    className="flex-1 py-3 pl-6 pr-2 text-sm font-bold text-left"
+                                    className="flex-1 py-1 pl-2 pr-1 text-xs font-bold text-left"
                                 >
                                     {tab}
                                 </button>
-                                <button 
+                                <button
                                     onClick={() => removePmTab(tab)}
-                                    className="p-1 mr-4 rounded-md hover:bg-white/[0.1] text-text-secondary hover:text-white transition-colors"
+                                    className="xp-btn-ghost p-1 mr-2"
                                 >
-                                    <X className="w-4 h-4" />
+                                    <X className="w-3.5 h-3.5" />
                                 </button>
                             </div>
                         ))}
                     </div>
-                    
+
                     {/* Message List */}
-                    <div key={activeTab} className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 animate-page-enter">
+                    <div key={activeTab} className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 hide-scrollbar">
                         {filteredMessages.length === 0 ? (
-                            <div className="flex-1 flex flex-col items-center justify-center text-text-secondary opacity-50">
-                                <MessageSquare className="w-12 h-12 mb-2" />
-                                <span>No messages yet</span>
+                            <div className="xp-empty flex-1">
+                                <MessageSquare className="w-10 h-10" />
+                                <span className="text-sm font-bold">No messages yet</span>
                             </div>
                         ) : (
                             filteredMessages.map(msg => (
                                 <div key={msg.id} className={`flex flex-col ${msg.isSentByMe ? 'items-end' : 'items-start'}`}>
-                                    <span className="text-[10px] text-text-secondary mb-1 px-1">{msg.sender} • {new Date(msg.timestamp).toLocaleTimeString()}</span>
-                                    <div className={`px-4 py-2 rounded-2xl max-w-[80%] whitespace-pre-wrap ${msg.isSentByMe ? 'bg-accent-blue text-white rounded-br-sm' : 'bg-white/[0.08] text-text-primary rounded-bl-sm'}`}>
+                                    <span className="xp-overline mb-1 px-1">
+                                        {msg.sender} · {new Date(msg.timestamp).toLocaleTimeString()}
+                                    </span>
+                                    <div className={`px-4 py-2 max-w-[80%] whitespace-pre-wrap text-sm
+                                        ${msg.isSentByMe
+                                            ? 'bg-accent-blue text-white'
+                                            : 'bg-nav-hover text-text-primary border border-border-dark'}`}
+                                    >
                                         {renderMessageContent(msg.content)}
                                     </div>
                                 </div>
@@ -186,46 +195,50 @@ export const VPilotModule = () => {
                         <div ref={messagesEndRef} />
                     </div>
 
-                    {/* Input */}
-                    <div className="p-3 border-t border-white/[0.05] flex gap-2 bg-black/20">
+                    {/* Input Bar */}
+                    <div className="xp-toolbar gap-2">
                         <input
                             type="text"
                             value={inputText}
                             onChange={(e) => setInputText(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                             placeholder={`Message ${activeTab}...`}
-                            className="flex-1 bg-white/[0.05] border border-white/[0.05] rounded-xl px-4 py-2 text-white outline-none focus:border-accent-blue/50 transition-colors"
+                            className="xp-input flex-1"
                         />
                         <button
                             onClick={handleSend}
                             disabled={!isConnected || !inputText.trim()}
-                            className="bg-accent-blue hover:bg-accent-blue/80 disabled:opacity-50 disabled:hover:bg-accent-blue text-white p-2 rounded-xl transition-all duration-200 active:scale-95 flex items-center justify-center w-10"
+                            className="xp-btn-primary disabled:opacity-50 disabled:cursor-not-allowed w-10 h-9 p-0"
                         >
-                            <Send className="w-5 h-5" />
+                            <Send className="w-4 h-4" />
                         </button>
                     </div>
                 </div>
-                
+
                 {/* Controllers Sidebar */}
-                <div className="w-64 flex flex-col bg-white/[0.03] border border-white/[0.05] rounded-[1.5rem] overflow-hidden">
-                    <div className="p-4 border-b border-white/[0.05] bg-black/10">
-                        <h3 className="font-bold text-xs tracking-widest text-text-secondary">ACTIVE CONTROLLERS</h3>
+                <div className="w-60 flex flex-col xp-panel overflow-hidden">
+                    <div className="xp-panel-header">
+                        <span className="xp-section-title">Active Controllers</span>
                     </div>
-                    <div className="flex-1 overflow-y-auto p-2 flex flex-col gap-1">
+                    <div className="flex-1 overflow-y-auto p-2 flex flex-col gap-0.5 hide-scrollbar">
                         {controllers.length === 0 ? (
-                            <div className="p-4 text-center text-xs text-text-secondary opacity-50 mt-4">
-                                No controllers online
+                            <div className="xp-empty py-8">
+                                <span className="text-xs">No controllers online</span>
                             </div>
                         ) : (
                             controllers.map(c => (
-                                <div 
-                                    key={c.callsign} 
+                                <div
+                                    key={c.callsign}
                                     onClick={() => handleTuneRadio(c.frequency)}
-                                    className="flex justify-between items-center p-3 rounded-xl hover:bg-white/[0.05] transition-colors border border-transparent hover:border-white/[0.02] cursor-pointer select-none"
+                                    className="flex justify-between items-center px-3 py-2.5
+                                               hover:bg-nav-hover border border-transparent hover:border-border-dark
+                                               cursor-pointer transition-colors"
                                     title="Click to tune COM1"
                                 >
                                     <span className="font-bold text-sm tracking-wide">{c.callsign}</span>
-                                    <span className="text-xs text-accent-blue font-mono font-bold bg-accent-blue/10 px-2 py-1 rounded-md">{c.frequency}</span>
+                                    <span className="xp-badge text-accent-blue border-accent-blue/30 bg-accent-blue/10">
+                                        {c.frequency}
+                                    </span>
                                 </div>
                             ))
                         )}

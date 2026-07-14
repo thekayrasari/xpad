@@ -1,25 +1,27 @@
+import { useEffect } from 'react';
 import { useFlightDataConnection } from './hooks/useFlightDataConnection';
 import { ModuleContainer } from './components/ModuleContainer';
-import { GlobalHeader } from './components/GlobalHeader';
+import { Sidebar } from './components/Sidebar';
+import { useSettingsStore } from './stores/settingsStore';
 
 const App = () => {
     useFlightDataConnection();
+    const fetchSettings = useSettingsStore(s => s.fetchSettings);
+
+    useEffect(() => {
+        void fetchSettings();
+    }, [fetchSettings]);
 
     return (
-        <>
-            {/* Background Gradients to make glassmorphism visible */}
-            <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10 bg-dark-bg">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-accent-teal/20 blur-[120px]" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-accent-blue/20 blur-[120px]" />
+        <div className="absolute inset-0 flex flex-row overflow-hidden bg-dark-bg text-text-primary font-sans select-none">
+            {/* Persistent Left Sidebar */}
+            <Sidebar />
+            
+            {/* Main Content Area */}
+            <div className="flex-1 h-full overflow-hidden relative flex flex-col">
+                <ModuleContainer />
             </div>
-
-            <div className="h-screen w-screen flex flex-col overflow-hidden p-2 gap-2 relative">
-                <GlobalHeader />
-                <div className="flex-1 w-full overflow-hidden relative z-10">
-                    <ModuleContainer />
-                </div>
-            </div>
-        </>
+        </div>
     );
 };
 

@@ -4,9 +4,11 @@ import path from 'path';
 import dotenv from 'dotenv';
 import { FlightDataService } from './services/flightDataService';
 import { WebSocketController } from './controllers/websocketController';
-import { VPilotInstallerService } from './services/vpilotInstaller';
+import { VPilotPluginService } from './services/vpilotPluginService';
 import { weatherRouter } from './routes/weather';
 import { launcherRouter } from './routes/launcher';
+import { modulesRouter } from './routes/modules';
+import { settingsRouter } from './routes/settings';
 
 // Handle global exceptions
 process.on('uncaughtException', (err: any) => {
@@ -45,10 +47,12 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/weather', weatherRouter);
 app.use('/api/launcher', launcherRouter);
+app.use('/api/modules', modulesRouter);
+app.use('/api/settings', settingsRouter);
 
 // Initialize services
 try {
-    VPilotInstallerService.installPlugin();
+    VPilotPluginService.installPlugin();
 } catch (e) {
     console.error('Failed to install vPilot plugin:', e);
 }

@@ -1,13 +1,14 @@
 import { create } from 'zustand';
+import type { ModuleType } from '../config/modules';
 
-export type ModuleType = 'home' | 'ofp' | 'radar' | 'weather' | 'pdf' | 'aoc' | 'settings' | 'notes' | 'simbrief' | 'fenix' | 'charts' | 'flightsimto' | 'nattrak' | 'fslabs' | 'vpilot' | 'launcher' | 'gsx' | 'calculators';
+export type { ModuleType };
 
 interface UIStoreState {
-    activeModule: ModuleType;
-    setActiveModule: (module: ModuleType) => void;
+    activeModule: string;
+    setActiveModule: (module: string) => void;
 }
 
 export const useUIStore = create<UIStoreState>((set) => ({
-    activeModule: 'home',
+    activeModule: 'ofp',
     setActiveModule: (module) => set({ activeModule: module }),
 }));

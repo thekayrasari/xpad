@@ -49,9 +49,9 @@ Quickly access essential simulation resources without leaving xPad:
 ### VATSIM & Network Connectivity
 - **vPilot Integration:** Native backend integration with the vPilot desktop client to monitor VATSIM network connection status, current callsign, and active COM frequencies directly inside the EFB.
 
-### Utilities
-- **Aviation Calculators:** Calculate Top of Descent (TOD) distances and Required Vertical Speed based on current altitude and ground speed. Includes handy aviation unit converters for weight, pressure, and temperature.
-
+### Configuration & Persistence
+- **Declarative Modules Registry:** Webviews and local iframes are loaded dynamically from backend configuration (`modules-settings.json`). Add, remove, or edit integrations dynamically without touching code or recompiling.
+- **Unified Disk Storage:** All preferences (SimBrief Pilot ID, simulator IP, charts provider, and app launch paths) are stored as flat JSON files in `%APPDATA%/xPad/` for persistent, one-time login sessions.
 
 ## Tech Stack
 
