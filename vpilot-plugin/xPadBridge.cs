@@ -12,10 +12,15 @@ namespace xPadPlugin
     [Export(typeof(IPlugin))]
     public class XPadBridge : IPlugin, IDisposable
     {
-        public string Name => "xPad Bridge";
+        public string Name { get { return "xPad Bridge"; } }
         private WebSocket _ws;
         private Timer _reconnectTimer;
         private IBroker _broker;
+
+        private bool _isConnected = false;
+        private string _connectedCallsign = null;
+        private readonly System.Collections.Generic.Dictionary<string, string> _activeControllers = new System.Collections.Generic.Dictionary<string, string>();
+        private readonly object _lock = new object();
 
         private string FormatFrequency(int f)
         {
@@ -57,9 +62,21 @@ namespace xPadPlugin
                     var msg = JObject.Parse(e.Data);
                     if ((string)msg["topic"] == "vpilot_send_message")
                     {
-                        bool isPrivate = (bool?)msg["payload"]?["isPrivate"] ?? false;
-                        string text = (string)msg["payload"]?["content"];
-                        string recipient = (string)msg["payload"]?["recipient"];
+                        var payloadToken = msg["payload"];
+                        bool isPrivate = false;
+                        string text = null;
+                        string recipient = null;
+                        if (payloadToken != null)
+                        {
+                            var isPrivateToken = payloadToken["isPrivate"];
+                            if (isPrivateToken != null)
+                            {
+                                isPrivate = (bool)isPrivateToken;
+                            }
+                            text = (string)payloadToken["content"];
+                            recipient = (string)payloadToken["recipient"];
+                        }
+
                         if (!string.IsNullOrEmpty(text))
                         {
                             if (isPrivate && !string.IsNullOrEmpty(recipient)) {
@@ -78,17 +95,34 @@ namespace xPadPlugin
             
             _ws.OnClose += (sender, e) => ScheduleReconnect();
             _ws.OnError += (sender, e) => ScheduleReconnect();
+            _ws.OnOpen += (sender, e) =>
+            {
+                broker.PostDebugMessage("xPadBridge: WebSocket connected. Sending current state.");
+                SendCurrentStatus();
+            };
 
             try { _ws.Connect(); } catch { ScheduleReconnect(); }
 
             broker.NetworkConnected += (sender, e) =>
             {
+                lock (_lock)
+                {
+                    _isConnected = true;
+                    _connectedCallsign = e.Callsign;
+                    _activeControllers.Clear();
+                }
                 var payload = new { topic = "vpilot_connection_status", payload = new { isConnected = true, callsign = e.Callsign } };
                 SafeSend(JsonConvert.SerializeObject(payload), broker);
             };
 
             broker.NetworkDisconnected += (sender, e) =>
             {
+                lock (_lock)
+                {
+                    _isConnected = false;
+                    _connectedCallsign = null;
+                    _activeControllers.Clear();
+                }
                 var payload = new { topic = "vpilot_connection_status", payload = new { isConnected = false } };
                 SafeSend(JsonConvert.SerializeObject(payload), broker);
             };
@@ -129,12 +163,23 @@ namespace xPadPlugin
             broker.ControllerAdded += (sender, e) =>
             {
                 string freqStr = FormatFrequency(e.Frequency);
+                lock (_lock)
+                {
+                    _activeControllers[e.Callsign] = freqStr;
+                }
                 var payload = new { topic = "vpilot_controller_added", payload = new { callsign = e.Callsign, frequency = freqStr } };
                 SafeSend(JsonConvert.SerializeObject(payload), broker);
             };
 
             broker.ControllerDeleted += (sender, e) =>
             {
+                lock (_lock)
+                {
+                    if (_activeControllers.ContainsKey(e.Callsign))
+                    {
+                        _activeControllers.Remove(e.Callsign);
+                    }
+                }
                 var payload = new { topic = "vpilot_controller_deleted", payload = new { callsign = e.Callsign } };
                 SafeSend(JsonConvert.SerializeObject(payload), broker);
             };
@@ -142,9 +187,46 @@ namespace xPadPlugin
             broker.ControllerFrequencyChanged += (sender, e) =>
             {
                 string freqStr = FormatFrequency(e.NewFrequency);
+                lock (_lock)
+                {
+                    _activeControllers[e.Callsign] = freqStr;
+                }
                 var payload = new { topic = "vpilot_controller_updated", payload = new { callsign = e.Callsign, frequency = freqStr } };
                 SafeSend(JsonConvert.SerializeObject(payload), broker);
             };
+        }
+
+        private void SendCurrentStatus()
+        {
+            if (_broker == null) return;
+
+            bool connected;
+            string callsign;
+            System.Collections.Generic.KeyValuePair<string, string>[] controllers;
+
+            lock (_lock)
+            {
+                connected = _isConnected;
+                callsign = _connectedCallsign;
+                controllers = new System.Collections.Generic.KeyValuePair<string, string>[_activeControllers.Count];
+                int i = 0;
+                foreach (var kvp in _activeControllers)
+                {
+                    controllers[i++] = kvp;
+                }
+            }
+
+            var statusPayload = new { topic = "vpilot_connection_status", payload = new { isConnected = connected, callsign = callsign } };
+            SafeSend(JsonConvert.SerializeObject(statusPayload), _broker);
+
+            if (connected)
+            {
+                foreach (var controller in controllers)
+                {
+                    var controllerPayload = new { topic = "vpilot_controller_added", payload = new { callsign = controller.Key, frequency = controller.Value } };
+                    SafeSend(JsonConvert.SerializeObject(controllerPayload), _broker);
+                }
+            }
         }
 
         private void ScheduleReconnect()
@@ -176,7 +258,10 @@ namespace xPadPlugin
 
         public void Dispose()
         {
-            _reconnectTimer?.Dispose();
+            if (_reconnectTimer != null)
+            {
+                _reconnectTimer.Dispose();
+            }
             if (_ws != null)
             {
                 if (_ws.ReadyState == WebSocketState.Open)

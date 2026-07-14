@@ -13,7 +13,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^31.0.0",
+    "electron": "^31.7.7",
     "electron-builder": "^26.15.3"
   },
   "dependencies": {
@@ -43,7 +43,7 @@
     }
   },
   "allowScripts": {
-    "electron@35.7.5": true,
-    "electron-winstaller@5.4.0": true
+    "electron-winstaller@5.4.0": true,
+    "electron@31.7.7": true
   }
 }

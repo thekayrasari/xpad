@@ -41,6 +41,8 @@ export class VPilotPluginService {
             if (programFilesX86) searchPaths.push(path.join(programFilesX86, 'vPilot'));
             searchPaths.push('C:/Program Files/Steam/steamapps/common/vPilot');
             searchPaths.push('C:/Program Files (x86)/Steam/steamapps/common/vPilot');
+            searchPaths.push('C:/Program Files/Steam/steamapps/common/MSFS2024/ATC/vPilot');
+            searchPaths.push('C:/Program Files (x86)/Steam/steamapps/common/MSFS2024/ATC/vPilot');
 
             let vPilotRoot = '';
             for (const p of searchPaths) {
@@ -89,6 +91,28 @@ export class VPilotPluginService {
                     }
                 } else {
                     console.log(`${dll} is already up to date in vPilot folder.`);
+                }
+
+                // Ensure websocket-sharp.dll is also copied to the root vPilot directory for assembly resolution
+                if (dll === 'websocket-sharp.dll') {
+                    const rootDllPath = path.join(vPilotRoot, dll);
+                    let needsRootCopy = true;
+                    if (fs.existsSync(rootDllPath)) {
+                        const sourceStat = fs.statSync(sourceDllPath);
+                        const rootStat = fs.statSync(rootDllPath);
+                        if (sourceStat.size === rootStat.size) {
+                            needsRootCopy = false;
+                        }
+                    }
+                    if (needsRootCopy) {
+                        try {
+                            const fileBuffer = fs.readFileSync(sourceDllPath);
+                            fs.writeFileSync(rootDllPath, fileBuffer);
+                            console.log(`Successfully installed ${dll} to root folder ${rootDllPath}`);
+                        } catch (err: any) {
+                            console.error(`Failed to copy ${dll} to root folder ${rootDllPath}. Error: ${err.message}`);
+                        }
+                    }
                 }
             }
 
