@@ -39,6 +39,7 @@ const NavButton: React.FC<SidebarItemProps> = ({ id, icon: Icon, label }) => {
 export const Sidebar: React.FC = () => {
     const { fetchOFP, isLoading } = useOFPStore();
     const simbriefId = useSettingsStore(state => state.simbriefId);
+    const moduleOrder = useSettingsStore(state => state.moduleOrder) || [];
     const { modules: dynamicModules, fetchModules } = useModulesStore();
 
     useEffect(() => {
@@ -62,6 +63,18 @@ export const Sidebar: React.FC = () => {
         }))
     ];
 
+    // Sort based on moduleOrder, appending unordered items at the end
+    const sortedMainModules = [...combinedMainModules].sort((a, b) => {
+        const indexA = moduleOrder.indexOf(a.id);
+        const indexB = moduleOrder.indexOf(b.id);
+        if (indexA === -1 && indexB === -1) {
+            return combinedMainModules.findIndex(x => x.id === a.id) - combinedMainModules.findIndex(x => x.id === b.id);
+        }
+        if (indexA === -1) return 1;
+        if (indexB === -1) return -1;
+        return indexA - indexB;
+    });
+
     const handleRefresh = async () => {
         if (simbriefId) {
             try {
@@ -76,7 +89,7 @@ export const Sidebar: React.FC = () => {
         <div className="w-24 h-full bg-nav-hover border-r border-border-dark flex flex-col z-50 shrink-0 justify-between">
             {/* Top scrollable section */}
             <div className="flex flex-col w-full flex-1 overflow-y-auto hide-scrollbar">
-                {combinedMainModules.map(m => (
+                {sortedMainModules.map(m => (
                     <NavButton key={m.id} id={m.id} icon={m.icon} label={m.label} />
                 ))}
             </div>

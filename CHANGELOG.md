@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.1] - 2026-07-20
+
+### Added
+- **Navigation Bar Reordering:** Added a premium drag-and-drop customization interface in Settings to reorder sidebar app icons. Custom order is saved globally and persists across application restarts.
+
 ## [1.4.0] - 2026-07-14
 
 ### Added

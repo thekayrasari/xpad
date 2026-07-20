@@ -5,6 +5,7 @@ export interface GlobalSettings {
     simbriefId: string;
     chartsProvider: string;
     simulatorIp: string;
+    moduleOrder?: string[];
 }
 
 export class SettingsService {
@@ -13,7 +14,8 @@ export class SettingsService {
     private settings: GlobalSettings = {
         simbriefId: '',
         chartsProvider: 'msfs',
-        simulatorIp: '127.0.0.1'
+        simulatorIp: '127.0.0.1',
+        moduleOrder: []
     };
 
     constructor() {
@@ -28,7 +30,8 @@ export class SettingsService {
                 this.settings = {
                     simbriefId: userSettings.simbriefId ?? '',
                     chartsProvider: userSettings.chartsProvider ?? 'msfs',
-                    simulatorIp: userSettings.simulatorIp ?? '127.0.0.1'
+                    simulatorIp: userSettings.simulatorIp ?? '127.0.0.1',
+                    moduleOrder: userSettings.moduleOrder ?? []
                 };
             } else {
                 this.saveSettings();
@@ -46,7 +49,8 @@ export class SettingsService {
         this.settings = {
             simbriefId: newSettings.simbriefId ?? this.settings.simbriefId,
             chartsProvider: newSettings.chartsProvider ?? this.settings.chartsProvider,
-            simulatorIp: newSettings.simulatorIp ?? this.settings.simulatorIp
+            simulatorIp: newSettings.simulatorIp ?? this.settings.simulatorIp,
+            moduleOrder: newSettings.moduleOrder ?? this.settings.moduleOrder
         };
         this.saveSettings();
     }
